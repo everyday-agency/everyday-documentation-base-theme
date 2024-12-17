@@ -1,0 +1,15 @@
+---
+const { spacerSize, title } = Astro.props;
+---
+
+<style lang="scss">
+    .bg-bs-gray-500 {
+        background-color: #212529;
+    }
+</style>
+
+<div
+    class={`spacer ${spacerSize} bg-bs-gray-500 mt-4 d-flex justify-content-center align-items-center`}
+>
+    <span>{title}</span>
+</div>
