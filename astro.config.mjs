@@ -7,7 +7,7 @@ export default defineConfig({
 
     integrations: [
         starlight({
-            title: 'Elementor Widgets Documentation',
+            title: 'Everyday.Agency WordPress FullSiteEdting Documentation',
             social: {
                 github: 'https://github.com/withastro/starlight',
             },
