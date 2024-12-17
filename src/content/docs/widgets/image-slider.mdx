@@ -1,0 +1,62 @@
+---
+title: Image Slider
+description: Image Slider widget allows you to display a set of images in a slider.
+sidebar:
+    badge:
+        text: first iteration
+        variant: note
+---
+
+
+import { Code } from '@astrojs/starlight/components';
+
+# Image Slider
+
+## Render Method for Image Slider
+
+**Settings for Render Method**
+
+export const settingsImageSlider = `
+$items = isset($settings['items']) ? $settings['items'] : [];
+$json_slides_per_view = Swiper_Utils::setSlidesPerView($settings);
+`
+
+<Code code={settingsImageSlider} lang="php" />
+
+<hr/>
+
+**Render Method for Image Slider**
+
+export const renderImageSlider = `
+
+<div
+    class="h-100 swiper image-slider-swiper swiper-id-<?php echo $this->get_id(); ?>"
+    data-swiper data-swiper-id="<?php echo $this->get_id(); ?>"
+    data-swiper-loop="<?php echo $settings['loop']; ?>"
+    data-swiper-set-autoplay="<?php echo $settings['autoplay']; ?>"
+    data-swiper-autoplay="<?php echo $settings['autoplay_speed']; ?>"
+    data-swiper-pagination="<?php echo $settings['pagination']; ?>"
+    data-swiper-arrows="<?php echo $settings['arrows']; ?>"
+    data-swiper-slider-per-view="<?php echo $json_slides_per_view; ?>"
+>
+    <div class="swiper-wrapper image-slider-swiper__wrapper position-relative">
+        <?php foreach ($items as $item) : ?>
+            <div class="swiper-slide image-slider-swiper__slide">
+                <div class="position-relative">
+                    <?php Image_Utils::render_image($item, 'image', 'object-fit-cover img-16x9 h-100 w-100'); ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <?php if ($settings['pagination'] == 'yes') : ?>
+        <div class="swiper-pagination swiper-pagination-id-<?php echo $this->get_id(); ?>"></div>
+    <?php endif; ?>
+    <?php if ($settings['arrows'] == 'yes') : ?>
+        <div class="image-slider-swiper-button-prev  swiper-button-prev swiper-button__prev-id-<?php echo $this->get_id(); ?>"></div>
+        <div class="image-slider-swiper-button-next swiper-button-next swiper-button__next-id-<?php echo $this->get_id(); ?>"></div>
+    <?php endif; ?>
+</div>
+`
+
+<Code code={renderImageSlider} lang="php" />
+
