@@ -12,7 +12,7 @@ The **Spacer Utility** provides consistent margin spacing classes and settings f
 ### Import Information
 
 #### JavaScript Import
-```javascript
+```jsx
 import {
     SpacerSettings,
     defaultSpacerAttributes,
@@ -20,7 +20,7 @@ import {
 } from '../../configuration/spacer/spacer';
 ```
 
-```javascript
+```jsx
 <InspectorControls>
     <SpacerSettings
         title="Container Settings"
@@ -28,6 +28,10 @@ import {
         setAttributes={setAttributes}
     />
 </InspectorControls>
+```
+
+```jsx
+<div className={spacerClass(attributes.spacer)}>
 ```
 
 #### PHP Import
@@ -52,7 +56,7 @@ if (!isset($attributes["spacer"])) {
 #### Default Attributes
 The `defaultSpacerAttributes` object defines the default spacer setting.
 
-```javascript
+```jsx
 export const defaultSpacerAttributes = {
     spacer: { type: 'string', default: 'medium' },
 };
@@ -96,7 +100,7 @@ export const spacerClass = (spacer) => {
 #### SpacerSettings Component
 The `SpacerSettings` component provides a UI for selecting spacer values in the WordPress block editor.
 
-```javascript
+```jsx
 export function SpacerSettings({ title, attributes, setAttributes }) {
     return (
         <PanelBody title={title}>
