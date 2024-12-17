@@ -1,0 +1,179 @@
+---
+title: "Spacer"
+description: "Documentation for the Spacer utility used in WordPress block components."
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+## Spacer Utility
+
+The **Spacer Utility** provides consistent margin spacing classes and settings for WordPress block components. It consists of a JavaScript implementation for the editor and a PHP utility for dynamic frontend rendering.
+
+### Import Information
+
+#### JavaScript Import
+```javascript
+import {
+    SpacerSettings,
+    defaultSpacerAttributes,
+    spacerClass,
+} from '../../configuration/spacer/spacer';
+```
+
+```javascript
+<InspectorControls>
+    <SpacerSettings
+        title="Container Settings"
+        attributes={attributes}
+        setAttributes={setAttributes}
+    />
+</InspectorControls>
+```
+
+#### PHP Import
+```php
+use basetheme\Utilities\Spacer_Utils;
+if (!isset($attributes["spacer"])) {
+    $attributes["spacer"] = "medium";
+}
+```
+
+
+```php
+<section class="<?php echo Spacer_Utils::render_spacer($attributes['spacer']); ?>">
+    <!-- Block content here -->
+</section>
+```
+
+---
+
+### JavaScript Implementation
+
+#### Default Attributes
+The `defaultSpacerAttributes` object defines the default spacer setting.
+
+```javascript
+export const defaultSpacerAttributes = {
+    spacer: { type: 'string', default: 'medium' },
+};
+```
+
+#### Spacer Classes
+The `spacerClass` function maps the spacer values to corresponding CSS classes.
+
+| Spacer Value | CSS Class      |
+|--------------|----------------|
+| None         | `mt-0`         |
+| Extra Small  | `mt-2`         |
+| Small        | `mt-3`         |
+| Medium       | `mt-4`         |
+| Large        | `mt-3 mt-lg-5` |
+| Extra Large  | `mt-5 mt-lg-10`|
+| Extra Extra Large | `mt-6 mt-lg-12`|
+
+**Function Implementation**:
+```javascript
+export const spacerClass = (spacer) => {
+    switch (spacer) {
+        case 'xSmall':
+            return 'mt-2';
+        case 'small':
+            return 'mt-3';
+        case 'medium':
+            return 'mt-4';
+        case 'large':
+            return 'mt-3 mt-lg-5';
+        case 'xLarge':
+            return 'mt-5 mt-lg-10';
+        case 'xxLarge':
+            return 'mt-6 mt-lg-12';
+        default:
+            return 'mt-0';
+    }
+};
+```
+
+#### SpacerSettings Component
+The `SpacerSettings` component provides a UI for selecting spacer values in the WordPress block editor.
+
+```javascript
+export function SpacerSettings({ title, attributes, setAttributes }) {
+    return (
+        <PanelBody title={title}>
+            <PanelRow>
+                <SelectControl
+                    label="Spacer"
+                    value={attributes.spacer}
+                    options={[
+                        { label: 'None', value: '' },
+                        { label: 'Extra Small', value: 'xSmall' },
+                        { label: 'Small', value: 'small' },
+                        { label: 'Medium', value: 'medium' },
+                        { label: 'Large', value: 'large' },
+                        { label: 'Extra Large', value: 'xLarge' },
+                        { label: 'Extra Extra Large', value: 'xxLarge' },
+                    ]}
+                    onChange={(spacer) => setAttributes({ spacer })}
+                />
+            </PanelRow>
+        </PanelBody>
+    );
+}
+```
+
+---
+
+### PHP Implementation
+
+The `Spacer_Utils` class provides a utility method to render the appropriate CSS class for spacers.
+
+#### PHP Utility Implementation
+
+```php
+namespace basetheme\Utilities;
+
+class Spacer_Utils
+{
+    public static function render_spacer($attributes)
+    {
+        $spacer = $attributes;
+
+        if (empty($spacer)) {
+            return;
+        }
+
+        $spacerClass = "";
+
+        switch ($spacer) {
+            case 'none':
+                $spacerClass = 'mt-0';
+                break;
+            case 'xSmall':
+                $spacerClass = 'mt-2';
+                break;
+            case 'small':
+                $spacerClass = 'mt-3';
+                break;
+            case 'medium':
+                $spacerClass = 'mt-4';
+                break;
+            case 'large':
+                $spacerClass = 'mt-3 mt-lg-5';
+                break;
+            case 'xLarge':
+                $spacerClass = 'mt-5 mt-lg-10';
+                break;
+            case 'xxLarge':
+                $spacerClass = 'mt-6 mt-lg-12';
+                break;
+            default:
+                $spacerClass = 'mt-0';
+                break;
+        }
+
+        return $spacerClass;
+    }
+}
+```
+
+---
