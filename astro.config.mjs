@@ -7,7 +7,7 @@ export default defineConfig({
 
     integrations: [
         starlight({
-            title: 'Everyday.Agency WordPress FullSiteEdting Documentation',
+            title: 'everyday.agency Documentation',
             social: {
                 github: 'https://github.com/withastro/starlight',
             },
