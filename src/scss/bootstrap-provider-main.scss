@@ -1,4 +1,9 @@
 .bootstrap-provider {
+    @import 'configuration/variables';
+
+    // Utilities - Bootstrap API
+    // @import 'utilities/utility-api';
+
     // Import Bootstrap scss
     @import 'bootstrap';
 }
