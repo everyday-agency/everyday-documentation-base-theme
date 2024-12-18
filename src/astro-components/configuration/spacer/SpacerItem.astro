@@ -1,5 +1,8 @@
 ---
-const { spacerSize, title } = Astro.props;
+const { spacerSize, title } = Astro.props as {
+    spacerSize: 'mt-2' | 'mt-3' | 'mt-4' | 'mt-5' | 'mt-10' | 'mt-12';
+    title: string;
+};
 
 const classNameMap = {
     'mt-2': 'h-2',
