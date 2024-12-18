@@ -33,8 +33,8 @@ export default defineConfig({
                     autogenerate: { directory: 'components' },
                 },
                 {
-                    labels: 'Controls',
-                    autogenerate: { directory: 'controls' },
+                    label: 'WordPress',
+                    autogenerate: { directory: 'wordpress' },
                 },
             ],
         }),

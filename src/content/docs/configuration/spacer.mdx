@@ -68,16 +68,17 @@ export const defaultSpacerAttributes = {
 
 #### Spacer Classes
 The `spacerClass` function maps the spacer values to corresponding CSS classes.
+Spacer variable is set to `$spacer: 1rem;` in the `_spacer.scss` file.
 
-| Spacer Value | CSS Class      |
-|--------------|----------------|
-| None         | `mt-0`         |
-| Extra Small  | `mt-2`         |
-| Small        | `mt-3`         |
-| Medium       | `mt-4`         |
-| Large        | `mt-3 mt-lg-5` |
-| Extra Large  | `mt-5 mt-lg-10`|
-| Extra Extra Large | `mt-6 mt-lg-12`|
+| Spacer Value | CSS Class      | Value          |
+|--------------|----------------|----------------|
+| None         | `mt-0`         | `0: 0`          |
+| Extra Small  | `mt-2`         | `2: $spacer * 0.5`     |
+| Small        | `mt-3`         | `3: $spacer`  |
+| Medium       | `mt-4`         | `4: $spacer * 1.5`     |
+| Large        | `mt-3 mt-lg-5` | `5: $spacer * 2`       |
+| Extra Large  | `mt-5 mt-lg-10`| `10: $spacer * 6`      |
+| Extra Extra Large | `mt-6 mt-lg-12`| `12: $spacer * 8`      |
 
 **Function Implementation**:
 ```javascript
