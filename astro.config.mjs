@@ -32,6 +32,10 @@ export default defineConfig({
                     label: 'Components',
                     autogenerate: { directory: 'components' },
                 },
+                {
+                    labels: 'Controls',
+                    autogenerate: { directory: 'controls' },
+                },
             ],
         }),
     ],
