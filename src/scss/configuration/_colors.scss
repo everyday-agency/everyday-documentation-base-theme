@@ -39,21 +39,21 @@ $theme-colors: (
     "warning": $color-warning
 );
 
-// Add Prefix to Colors
-@function append-prefix($prefix, $map) {
-    $new-map: (
-    );
+// // Add Prefix to Colors
+// @function append-prefix($prefix, $map) {
+//     $new-map: (
+//     );
 
-@each $key, $value in $map {
-    $new-map: map-merge($new-map, ($prefix + $key: $value));
-}
+// @each $key, $value in $map {
+//     $new-map: map-merge($new-map, ($prefix + $key: $value));
+// }
 
-@return $new-map;
-}
+// @return $new-map;
+// }
 
-$prefix: "my-bs-";
-$prefixed-theme-colors: append-prefix($prefix, $theme-colors);
-$theme-colors: $prefixed-theme-colors;
+// $prefix: "my-bs-";
+// $prefixed-theme-colors: append-prefix($prefix, $theme-colors);
+// $theme-colors: $prefixed-theme-colors;
 
-// Import Bootstrap
-@import "bootstrap/scss/bootstrap";
+// // Import Bootstrap
+// @import "bootstrap/scss/bootstrap";
