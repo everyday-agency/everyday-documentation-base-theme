@@ -1,0 +1,270 @@
+---
+title: Hero Slider
+description: This documentation provides an overview of the Hero Slider Component and its child block **Hero Slide Item**, designed to create customizable and dynamic hero sliders in WordPress.
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import HeroSlider from "@components/components/Hero/HeroSlider.astro"
+
+<HeroSlider />
+
+
+The **Hero Slider Component** consists of:
+- **Hero Slider Block**: A container block for the slider.
+- **Hero Slide Item Block**: Individual slides containing an image, text, subtitle, and a button.
+
+It supports Swiper.js configurations for autoplay, navigation, pagination, and more.
+
+---
+
+## Hero Slider Block (JavaScript)
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/hero-slider`.
+
+```javascript
+registerBlockType('basetheme/hero-slider', {
+    title: 'Hero Slider',
+    icon: icon.heroSlider,
+    category: 'layout',
+    description: 'A hero slider block',
+    keywords: ['slider', 'hero'],
+    supports: {
+        align: ['full'],
+    },
+    attributes: {
+        align: { type: 'string', default: 'full' },
+        uuid: {
+            type: 'string', default: '',
+        },
+        ...defaultSwiperAttributes,
+    },
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+---
+
+### Attributes
+
+| Attribute         | Type       | Default     | Description                          |
+|-------------------|------------|-------------|--------------------------------------|
+| `align`           | `string`   | `'full'`    | Block alignment                      |
+| `uuid`            | `string`   | `''`        | Unique identifier for the slider     |
+| Swiper Attributes | Various    | Various     | Settings for Swiper.js functionality |
+
+---
+
+### Edit Component
+
+The `EditComponent` integrates Swiper.js settings and allows for adding child slides.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    useEffect(() => {
+        if (!attributes.uuid) {
+            setAttributes({ uuid: uuidv4() });
+        }
+    }, []);
+
+    const BLOCKS_TEMPLATE = [['basetheme/hero-slider-item']];
+
+    return (
+        <>
+            <InspectorControls>
+                <SwiperSettings
+                    title="Hero Slider Settings"
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                />
+            </InspectorControls>
+            <div className="my-4">
+                <div className="border border-light p-2 bg-gray-100">
+                    <InnerBlocks
+                        allowedBlocks={['basetheme/hero-slider-item']}
+                        template={BLOCKS_TEMPLATE}
+                    />
+                </div>
+            </div>
+        </>
+    );
+}
+```
+
+---
+
+### Save Component
+
+```javascript
+function SaveComponent() {
+    return <InnerBlocks.Content />;
+}
+```
+
+---
+
+## Hero Slide Item Block (JavaScript)
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/hero-slider-item`.
+
+```javascript
+registerBlockType('basetheme/hero-slider-item', {
+    title: 'Hero Slide Item',
+    icon: icon.heroSlideItem,
+    parent: ['basetheme/hero-slider'],
+    supports: {},
+    attributes: {
+        ...getDefaultImageAttributes,
+        ...defaultTextAttributes,
+        ...defaultButtonAttributes,
+        subtitle: {
+            type: 'string',
+            default: 'Subtitle',
+        },
+    },
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+---
+
+### Edit Component
+
+The `EditComponent` allows customization of the slide's image, text, subtitle, and button.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    return (
+        <>
+            <InspectorControls>
+                <ImageSettings
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                    imageSizeOptions={[
+                        { value: 'pageBanner', label: 'Banner' },
+                        { value: 'full', label: 'Full' },
+                        { value: 'medium', label: 'Medium' },
+                    ]}
+                />
+            </InspectorControls>
+            <div className="hero-slider">
+                <div className="position-relative h-100">
+                    <div className="image-backdrop h-100">
+                        <Image mediaUrl={attributes.mediaUrl} variant="cover" />
+                    </div>
+                    <div className="position-absolute w-100 z-1 top-50 start-50 translate-middle">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-6">
+                                    <Text
+                                        attributes={attributes}
+                                        setAttributes={setAttributes}
+                                        className="text-white fs-72"
+                                    />
+                                    <Text
+                                        attributes={{
+                                            text: attributes.subtitle,
+                                        }}
+                                        setAttributes={(newAttributes) => {
+                                            setAttributes({
+                                                subtitle: newAttributes.text,
+                                            });
+                                        }}
+                                        className="text-white fs-24"
+                                    />
+                                    <div className="d-flex">
+                                        <Button
+                                            attributes={attributes}
+                                            setAttributes={setAttributes}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+```
+
+---
+
+## PHP Implementation
+
+### Hero Slider Block Rendering
+
+```php
+<section class="bs-hero-slider hero-slider swiper swiper-id-<?php echo $attributes["uuid"]; ?> <?php echo $attributes["infiniteLoop"] == "true" ? 'swiper-transition-timing-linear' : ''; ?>"
+    data-swiper data-swiper-id=<?php echo $attributes["uuid"]; ?>
+    data-swiper-loop="<?php echo $attributes["loop"]; ?>"
+    data-swiper-set-autoplay="<?php echo $attributes["autoplay"]; ?>"
+    data-swiper-autoplay="<?php echo $attributes["autoplaySpeed"]; ?>"
+    data-swiper-pagination="<?php echo $attributes["pagination"]; ?>"
+    data-swiper-navigation="<?php echo $attributes["navigation"]; ?>"
+    data-swiper-effect="<?php echo $attributes["effect"]; ?>"
+    data-swiper-space-between="<?php echo $attributes["spaceBetween"]; ?>"
+    data-swiper-slides-per-view="<?php echo $attributes["slidesPerView"]; ?>"
+    data-swiper-infiniteloop="<?php echo $attributes["infiniteLoop"]; ?>">
+
+    <div class="swiper-wrapper">
+        <?php echo $content; ?>
+    </div>
+
+    <?php if ($attributes["pagination"] == 'true') : ?>
+        <div class="swiper-pagination swiper-pagination-id-<?php echo $attributes["uuid"]; ?>"></div>
+    <?php endif; ?>
+    <?php if ($attributes["navigation"] == 'true') : ?>
+        <div class="swiper-button-prev swiper-button__prev-id-<?php echo $attributes["uuid"]; ?>"></div>
+        <div class="swiper-button-next swiper-button__next-id-<?php echo $attributes["uuid"]; ?>"></div>
+    <?php endif; ?>
+</section>
+```
+
+---
+
+### Hero Slide Item Block Rendering
+
+```php
+<div class="swiper-slide hero-slide h-100">
+    <div class="position-relative hero-slider">
+        <div class="hero-image image-backdrop">
+            <?php Image_Utils::render_image($attributes, "w-100 h-100 object-fit-cover"); ?>
+        </div>
+        <div class="position-absolute w-100 z-1 top-50 start-50 translate-middle">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <?php if ($attributes['text'] != "") : ?>
+                            <?php echo Text_Utils::render_text($attributes["text"], $attributes, "fs-72 text-white mb-5"); ?>
+                        <?php endif; ?>
+                        <?php if ($attributes['subtitle'] != "") : ?>
+                            <?php echo Text_Utils::render_text($attributes["subtitle"], $attributes, "fs-24 text-white mb-5"); ?>
+                        <?php endif; ?>
+                        <?php if ($attributes['linkObject'] != ""): ?>
+                            <?php echo Button_Utils::render_button($attributes); ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+---
+
+## Conclusion
+
+The **Hero Slider Component** and its child block **Hero Slide Item** provide a robust and flexible solution for creating visually appealing and highly customizable sliders in WordPress.

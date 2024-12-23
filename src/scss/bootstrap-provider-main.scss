@@ -7,10 +7,16 @@
     // Import Bootstrap scss
     @import 'bootstrap';
 
+    // Import utilities
+    @import 'utilities/swiper';
+
     // Import Overrides
     @import 'overrides/colors';
+    @import 'overrides/swiper';
+
 
     // Import Components
     @import 'components/container.scss';
     @import 'components/big-teaser.scss';
+    @import 'components/hero-slider';
 }

@@ -1,0 +1,50 @@
+---
+import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
+import HeroSliderItem from './HeroSliderItem.astro';
+
+const heroSliderItemArray = [
+    {
+        title: 'Hero Slider 1',
+        subtitle: 'Hero Slider 1 Subtitle',
+    },
+    {
+        title: 'Hero Slider 2',
+        subtitle: 'Hero Slider 2 Subtitle',
+    },
+];
+---
+
+<BootstrapProvider>
+    <div
+        class="hero-slider swiper swiper-id-hero-slider"
+        data-swiper
+        data-swiper-id="hero-slider"
+        data-swiper-loop="true"
+        data-swiper-set-autoplay="true"
+        data-swiper-autoplay="3000"
+        data-swiper-pagination="true"
+        data-swiper-navigation="true"
+        data-swiper-effect="slide"
+        data-swiper-space-between="0"
+        data-swiper-slides-per-view="1"
+        data-swiper-infiniteloop="false"
+    >
+        <div class="swiper-wrapper">
+            {
+                heroSliderItemArray.map((heroSliderItem, index) => (
+                    <HeroSliderItem
+                        key={index}
+                        title={heroSliderItem.title}
+                        subtitle={heroSliderItem.subtitle}
+                    />
+                ))
+            }
+        </div>
+        <div class="swiper-pagination swiper-pagination-id-hero-slider"></div>
+
+        <div class="swiper-button-prev swiper-button__prev-id-hero-slider">
+        </div>
+        <div class="swiper-button-next swiper-button__next-id-hero-slider">
+        </div>
+    </div>
+</BootstrapProvider>
