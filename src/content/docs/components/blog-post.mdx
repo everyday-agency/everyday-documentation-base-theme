@@ -1,0 +1,270 @@
+---
+title: Blog Post
+description: This documentation provides an overview of the Blog-Post Component, which allows users to fetch and display posts dynamically with customizable settings.
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import BlogPost from "@components/components/blog-post/BlogPost.astro";
+
+<BlogPost />
+
+---
+
+The **Blog-Post Component** is a WordPress block designed to:
+- Fetch posts dynamically based on selected criteria.
+- Display posts in a grid layout with an image, title, excerpt, and a "Read More" button.
+- Provide settings for post type, order, and number of posts.
+
+---
+
+## JavaScript Implementation
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/blog-post`.
+
+```javascript
+registerBlockType('basetheme/blog-post', {
+    title: 'Blog-post',
+    icon: postList,
+    category: 'layout',
+    parent: ['base-theme/container'],
+    description: 'A Description',
+    keywords: '[]',
+    supports: {},
+    attributes: {
+        postType: {
+            type: 'string',
+            default: 'post',
+        },
+        postPerPage: {
+            type: 'number',
+            default: 6,
+        },
+        orderby: {
+            type: 'string',
+            default: 'post_date',
+        },
+        order: {
+            type: 'string',
+            default: 'desc',
+        },
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+---
+
+### Attributes
+
+| Attribute       | Type     | Default    | Description                         |
+|-----------------|----------|------------|-------------------------------------|
+| `postType`      | `string` | `'post'`   | Type of post to fetch               |
+| `postPerPage`   | `number` | `6`        | Number of posts to display per page |
+| `orderby`       | `string` | `post_date`| Criteria for ordering posts         |
+| `order`         | `string` | `desc`     | Order of posts (`asc` or `desc`)    |
+
+---
+
+### Edit Component
+
+The `EditComponent` provides settings for the block in the WordPress editor.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    const { postType } = attributes;
+
+    const postTypes = useSelect(
+        (select) => select(coreStore).getPostTypes({ per_page: -1 }),
+        []
+    );
+
+    const postTypeOptions = !Array.isArray(postTypes)
+        ? postTypes
+        : postTypes
+              .filter((type) => type.viewable === true)
+              .map((type) => ({
+                  label: type.labels.singular_name,
+                  value: type.slug,
+              }));
+
+    return (
+        <>
+            <InspectorControls>
+                <PanelBody title="Blog Post Settings">
+                    <PanelRow>
+                        <SelectControl
+                            label="Select a Post Type"
+                            value={postType}
+                            options={postTypeOptions}
+                            onChange={(value) =>
+                                setAttributes({ postType: value })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <TextControl
+                            label="Posts per Page"
+                            value={attributes.postPerPage}
+                            onChange={(value) =>
+                                setAttributes({ postPerPage: value })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <SelectControl
+                            label="Order By"
+                            value={attributes.orderby}
+                            options={[
+                                { label: 'Date', value: 'post_date' },
+                                { label: 'Title', value: 'post_title' },
+                                { label: 'Menu Order', value: 'menu_order' },
+                                {
+                                    label: 'Last Modified',
+                                    value: 'modified',
+                                },
+                                {
+                                    label: 'Comment Count',
+                                    value: 'comment_count',
+                                },
+                                { label: 'Random', value: 'rand' },
+                            ]}
+                            onChange={(value) =>
+                                setAttributes({ orderby: value })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <SelectControl
+                            label="Order"
+                            value={attributes.order}
+                            options={[
+                                { label: 'Ascending', value: 'asc' },
+                                { label: 'Descending', value: 'desc' },
+                            ]}
+                            onChange={(value) =>
+                                setAttributes({ order: value })
+                            }
+                        />
+                    </PanelRow>
+                </PanelBody>
+            </InspectorControls>
+
+            <div className="blog-post">
+                <h2>Blog Post</h2>
+                <p className="alert alert-warning">
+                    Post Types werden im Backend zurzeit nicht angezeigt.
+                </p>
+            </div>
+        </>
+    );
+}
+```
+
+---
+
+## PHP Implementation
+
+The PHP logic ensures the fetching and rendering of posts based on block attributes.
+
+### Initialization
+
+The block attributes are initialized with default values.
+
+```php
+if (!isset($attributes['postType'])) {
+    $attributes['postType'] = 'post';
+}
+
+if (!isset($attributes['postPerPage'])) {
+    $attributes['postPerPage'] = 6;
+}
+
+if (!isset($attributes['orderby'])) {
+    $attributes['orderby'] = 'post_date';
+}
+
+if (!isset($attributes['order'])) {
+    $attributes['order'] = 'desc';
+}
+
+$args = array(
+    'post_type' => $attributes['postType'],
+    'posts_per_page' => $attributes["postPerPage"],
+    'orderby' => $attributes['orderby'],
+    'order' => $attributes['order']
+);
+
+$blog_posts = new WP_Query($args);
+```
+
+---
+
+### Rendering
+
+The block is rendered as a grid of posts with images, titles, excerpts, and links.
+
+```php
+<div class="bs-blog-post container mt-6">
+    <div class="row">
+        <?php
+        if ($blog_posts->have_posts()) : ?>
+            <?php while ($blog_posts->have_posts()) : $blog_posts->the_post(); ?>
+                <div class="col-12 col-lg-4">
+                    <div class="bg-white shadow-lg">
+                        <img src="<?php echo get_the_post_thumbnail_url(); ?>" alt="<?php the_title(); ?>" class="blog-post-image">
+                        <div class="p-4">
+                            <h2 class="fs-32"><?php the_title(); ?></h2>
+                            <p><?php the_excerpt(); ?></p>
+                            <a href="<?php the_permalink(); ?>" class="btn btn-primary">Read more</a>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+            <?php wp_reset_postdata(); ?>
+        <?php else : ?>
+            <p><?php esc_html_e('No posts found.', 'text-domain'); ?></p>
+        <?php endif; ?>
+    </div>
+</div>
+```
+
+---
+
+## Example Usage
+
+### Editor View
+
+1. Select a post type.
+2. Adjust the number of posts displayed per page.
+3. Configure the order and sorting criteria.
+
+### Frontend View
+
+```html
+<div class="bs-blog-post container mt-6">
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="bg-white shadow-lg">
+                <img src="/path/to/image.jpg" alt="Post Title" class="blog-post-image">
+                <div class="p-4">
+                    <h2 class="fs-32">Post Title</h2>
+                    <p>Post excerpt goes here...</p>
+                    <a href="/post-link" class="btn btn-primary">Read more</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+---
+
+## Conclusion
+
+The **Blog-Post Component** provides an efficient way to dynamically fetch and display posts with customizable settings for various layouts and use cases.

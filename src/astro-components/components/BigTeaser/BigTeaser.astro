@@ -1,0 +1,20 @@
+---
+import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
+import Image from '@components/utilities/image/Image.astro';
+import Title from '@components/utilities/title/Title.astro';
+import SubTitle from '@components/utilities/subtitle/SubTitle.astro';
+import Button from '@components/utilities/button/Button.astro';
+---
+
+<BootstrapProvider>
+    <div class="big-teaser">
+        <div class="position-relative">
+            <Image />
+            <div class="position-absolute bottom-0 left-0 w-100 p-3">
+                <Title title="Title" />
+                <SubTitle subtitle="Subtitle" />
+                <Button title="Button" color="primary" />
+            </div>
+        </div>
+    </div>
+</BootstrapProvider>

@@ -1,0 +1,46 @@
+---
+import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
+import BlogPostItem from './BlogPostItem.astro';
+
+const postArray = [
+    {
+        title: 'Title 1',
+        postContent: 'Post Content 1',
+    },
+    {
+        title: 'Title 2',
+        postContent: 'Post Content 2',
+    },
+    {
+        title: 'Title 3',
+        postContent: 'Post Content 3',
+    },
+    {
+        title: 'Title 4',
+        postContent: 'Post Content 4',
+    },
+    {
+        title: 'Title 5',
+        postContent: 'Post Content 5',
+    },
+    {
+        title: 'Title 6',
+        postContent: 'Post Content 6',
+    },
+];
+---
+
+<BootstrapProvider>
+    <div class="container">
+        <div class="row row-gap-3">
+            {
+                postArray.map((post) => (
+                    <BlogPostItem
+                        title={post.title}
+                        postContent={post.postContent}
+                    />
+                ))
+            }
+        </div>
+    </div>
+</BootstrapProvider>

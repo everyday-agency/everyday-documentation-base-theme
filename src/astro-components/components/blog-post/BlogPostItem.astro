@@ -1,0 +1,17 @@
+---
+import Button from '@components/utilities/button/Button.astro';
+import Image from '@components/utilities/image/Image.astro';
+const { title, postContent } = Astro.props;
+// TODO: Build BlogPostItem with publish Date - Image - Title - Subtitle - Button
+---
+
+<div class="col-12 col-lg-4">
+    <div class="light-dark-background shadow-lg">
+        <Image />
+        <div class="p-4">
+            <h2 class="fs-32">{title}</h2>
+            <p>{postContent}</p>
+            <Button title="Read More" color="primary" />
+        </div>
+    </div>
+</div>

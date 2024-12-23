@@ -1,8 +1,8 @@
 ---
 import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
-const { title, color } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <BootstrapProvider>
-    <div class={`btn btn-bootstrap-${color} mt-0`}>{title}</div>
+    <h2 class="fw-bold fs-36">{title}</h2>
 </BootstrapProvider>
