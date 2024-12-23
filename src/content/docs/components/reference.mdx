@@ -1,0 +1,268 @@
+---
+title: Reference
+description: This documentation provides an overview of the Reference Component, which displays posts with filtering options based on categories.
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Reference from "@components/components/reference/Reference.astro";
+
+<Reference />
+
+
+---
+
+The **Reference Component** allows users to:
+- Display posts of a specific post type (default: `reference`).
+- Filter posts by categories using dynamic buttons.
+- Customize the number of posts, sorting order, and order criteria.
+
+---
+
+## JavaScript Implementation
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/reference`.
+
+```javascript
+registerBlockType('basetheme/reference', {
+    title: 'Referenzen',
+    icon: layout,
+    category: 'layout',
+    parent: ['basetheme/container'],
+    description: 'A Description',
+    keywords: '[]',
+    supports: {},
+    attributes: {
+        postType: {
+            type: 'string',
+            default: 'reference',
+        },
+        postPerPage: {
+            type: 'number',
+            default: 6,
+        },
+        orderby: {
+            type: 'string',
+            default: 'post_date',
+        },
+        order: {
+            type: 'string',
+            default: 'desc',
+        },
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+---
+
+### Attributes
+
+| Attribute     | Type     | Default        | Description                               |
+|---------------|----------|----------------|-------------------------------------------|
+| `postType`    | `string` | `'reference'`  | The post type to fetch                   |
+| `postPerPage` | `number` | `6`            | Number of posts to display per page      |
+| `orderby`     | `string` | `'post_date'`  | Sorting criteria (e.g., `post_date`)     |
+| `order`       | `string` | `'desc'`       | Sorting order (`asc` or `desc`)          |
+
+---
+
+### Edit Component
+
+The `EditComponent` provides a WordPress editor interface to configure the block settings.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    const { postType } = attributes;
+
+    const postTypes = useSelect(
+        (select) => select(coreStore).getPostTypes({ per_page: -1 }),
+        []
+    );
+
+    const postTypeOptions = !Array.isArray(postTypes)
+        ? postTypes
+        : postTypes
+              .filter((type) => type.viewable === true)
+              .map((type) => ({
+                  label: type.labels.singular_name,
+                  value: type.slug,
+              }));
+
+    return (
+        <>
+            <InspectorControls>
+                <PanelBody title="Blog Post Settings">
+                    <PanelRow>
+                        <SelectControl
+                            label="Select a Post Type"
+                            value={postType}
+                            options={postTypeOptions}
+                            onChange={(value) =>
+                                setAttributes({ postType: value })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <TextControl
+                            label="Posts per Page"
+                            value={attributes.postPerPage}
+                            onChange={(value) =>
+                                setAttributes({ postPerPage: value })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <SelectControl
+                            label="Order By"
+                            value={attributes.orderby}
+                            options={[
+                                { label: 'Date', value: 'post_date' },
+                                { label: 'Title', value: 'post_title' },
+                                { label: 'Menu Order', value: 'menu_order' },
+                                { label: 'Last Modified', value: 'modified' },
+                                { label: 'Comment Count', value: 'comment_count' },
+                                { label: 'Random', value: 'rand' },
+                            ]}
+                            onChange={(value) =>
+                                setAttributes({ orderby: value })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <SelectControl
+                            label="Order"
+                            value={attributes.order}
+                            options={[
+                                { label: 'Ascending', value: 'asc' },
+                                { label: 'Descending', value: 'desc' },
+                            ]}
+                            onChange={(value) =>
+                                setAttributes({ order: value })
+                            }
+                        />
+                    </PanelRow>
+                </PanelBody>
+            </InspectorControls>
+
+            <div className="blog-post">
+                <h2>Referenz Post</h2>
+                <p className="alert alert-warning">
+                    Post Types werden im Backend zurzeit nicht angezeigt.
+                </p>
+            </div>
+        </>
+    );
+}
+```
+
+---
+
+## PHP Implementation
+
+### Initialization
+
+The block attributes are initialized with default values.
+
+```php
+if (!isset($attributes['postType'])) {
+    $attributes['postType'] = 'reference';
+}
+
+if (!isset($attributes['postPerPage'])) {
+    $attributes['postPerPage'] = 6;
+}
+
+if (!isset($attributes['orderby'])) {
+    $attributes['orderby'] = 'post_date';
+}
+
+if (!isset($attributes['order'])) {
+    $attributes['order'] = 'desc';
+}
+```
+
+---
+
+### Rendering
+
+The block renders posts filtered by selected categories.
+
+```php
+<div class="bs-reference container mt-6">
+    <!-- Filter Buttons -->
+    <div class="mb-4">
+        <button class="btn btn-primary text-white me-2 filter-button" data-filter data-category="">Alle</button>
+        <?php foreach ($categories as $category) : ?>
+            <button class="btn btn-outline-primary me-2 filter-button" data-filter data-category="<?php echo esc_attr($category->slug); ?>">
+                <?php echo esc_html($category->name); ?>
+            </button>
+        <?php endforeach; ?>
+    </div>
+
+    <!-- Posts List -->
+    <div class="row posts-container">
+        <?php if ($blog_posts->have_posts()) : ?>
+            <?php while ($blog_posts->have_posts()) : $blog_posts->the_post(); ?>
+                <div class="col-12 col-lg-4 post-item" data-post data-category="<?php echo esc_attr(join(' ', wp_get_post_categories(get_the_ID(), array('fields' => 'slugs')))); ?>">
+                    <div class="position-relative reference-wrapper">
+                        <div class="reference-image">
+                            <img src="<?php echo get_the_post_thumbnail_url(); ?>" alt="<?php the_title(); ?>" class="blog-post-image">
+                        </div>
+                        <div class="position-absolute bottom-0 start-0 end-0 p-3 reference-content">
+                            <h3 class="text-white"><?php the_title(); ?></h3>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+            <?php wp_reset_postdata(); ?>
+        <?php else : ?>
+            <p><?php esc_html_e('No posts found.', 'text-domain'); ?></p>
+        <?php endif; ?>
+    </div>
+</div>
+```
+
+---
+
+## Example Usage
+
+### Editor View
+
+1. Select a post type to display.
+2. Set the number of posts to show per page.
+3. Configure the sorting criteria and order.
+
+### Frontend View
+
+```html
+<div class="bs-reference container mt-6">
+    <div class="mb-4">
+        <button class="btn btn-primary text-white me-2 filter-button" data-filter data-category="">Alle</button>
+        <button class="btn btn-outline-primary me-2 filter-button" data-filter data-category="example-category">Example</button>
+    </div>
+    <div class="row posts-container">
+        <div class="col-12 col-lg-4 post-item" data-post data-category="example-category">
+            <div class="position-relative reference-wrapper">
+                <div class="reference-image">
+                    <img src="/path/to/image.jpg" alt="Post Title" class="blog-post-image">
+                </div>
+                <div class="position-absolute bottom-0 start-0 end-0 p-3 reference-content">
+                    <h3 class="text-white">Post Title</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+---
+
+## Conclusion
+
+The **Reference Component** provides a flexible way to showcase posts with filtering options, making it ideal for portfolio or reference sections.
