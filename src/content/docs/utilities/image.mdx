@@ -1,6 +1,434 @@
 ---
 title: Image
-description: Your Description
+description: This documentation provides an overview of the Image Component and Image Settings, which handle image selection, settings, and rendering for custom WordPress blocks.
 ---
 
 import { Code } from '@astrojs/starlight/components';
+
+import Image from "@components/utilities/image/Image.astro";
+
+<Image />
+
+## Image Component
+
+The **Image Component** allows users to select and manage images in a WordPress block. It includes settings for image size, lazy loading, and media selection. The logic is divided into two parts:
+
+1. **ImageSettings**: Handles image-related settings and selection.
+2. **Image**: Renders the image on the frontend.
+
+---
+
+## Import Information
+
+### JavaScript Import
+
+```javascript
+import {
+    Image,
+    ImageSettings,
+    getDefaultImageAttributes,
+} from '../../utilities/image/image';
+```
+
+```javascript
+    attributes: {
+        ...getDefaultImageAttributes,
+        // Other attributes...
+    },
+```
+
+```javascript
+const imageSizeOptions = [
+    { value: 'pageBanner', label: 'Banner' },
+    { value: 'full', label: 'Full' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'partnerLogo', label: 'Partner Logo' },
+];
+```
+
+```javascript
+<ImageSettings
+    attributes={attributes}
+    setAttributes={setAttributes}
+    imageSizeOptions={imageSizeOptions}
+/>
+```
+
+```javascript
+<Image mediaUrl={attributes.mediaUrl} variant="cover" />
+```
+
+### PHP Import
+
+```php
+use basetheme\Utilities\Image_Utils;
+Image_Utils::init_image($attributes);
+```
+
+```php
+<?php Image_Utils::render_image($attributes, "w-100 h-100 object-fit-cover"); ?>
+```
+
+---
+
+## Default Attributes
+
+The `getDefaultImageAttributes` object defines the default attributes for the image component.
+
+```javascript
+export const getDefaultImageAttributes = {
+    mediaId: { type: 'number' },
+    mediaUrl: {
+        type: 'string',
+        default: placeholderImage,
+    },
+    imageSize: { type: 'string', default: 'full' },
+    loading: { type: 'boolean', default: true },
+};
+```
+
+- **`mediaId`**: The ID of the selected media.
+- **`mediaUrl`**: The URL of the image. Defaults to a placeholder image.
+- **`imageSize`**: The size of the image. Defaults to `'full'`.
+- **`loading`**: Determines if lazy loading is enabled. Defaults to `true`.
+
+---
+
+## ImageSettings Component
+
+The `ImageSettings` component handles image selection and configuration.
+
+### Component Definition
+
+```javascript
+export function ImageSettings({ attributes, setAttributes, imageSizeOptions }) {
+    useEffect(() => {
+        async function fetchImage() {
+            if (!attributes.mediaId) return;
+
+            const response = await apiFetch({
+                path: `/wp/v2/media/${attributes.mediaId}`,
+                method: 'GET',
+            });
+
+            setAttributes({
+                mediaUrl:
+                    response.media_details.sizes[attributes.imageSize]
+                        ?.source_url || response.source_url,
+            });
+        }
+
+        fetchImage();
+    }, [attributes.mediaId, attributes.imageSize, setAttributes]);
+
+    return (
+        <PanelBody title="Bild Einstellungen" initialOpen={true}>
+            <PanelRow>
+                <MediaUploadCheck>
+                    <MediaUpload
+                        onSelect={(media) =>
+                            setAttributes({
+                                mediaId: media.id,
+                                mediaUrl: media.url,
+                            })
+                        }
+                        value={attributes.mediaId}
+                        render={({ open }) => (
+                            <Button variant="primary" onClick={open}>
+                                Bild auswählen
+                            </Button>
+                        )}
+                    />
+                </MediaUploadCheck>
+            </PanelRow>
+            <PanelRow>
+                <img
+                    className="img-fluid object-fit-cover"
+                    src={attributes.mediaUrl}
+                    alt="Selected Image"
+                    width={200}
+                />
+            </PanelRow>
+            <PanelRow>
+                <SelectControl
+                    label="Bildgröße"
+                    value={attributes.imageSize}
+                    options={imageSizeOptions}
+                    onChange={(size) => setAttributes({ imageSize: size })}
+                />
+            </PanelRow>
+            <PanelRow>
+                <ToggleControl
+                    label="Lazy Loading aktivieren"
+                    checked={attributes.loading}
+                    onChange={(loading) => setAttributes({ loading })}
+                />
+            </PanelRow>
+        </PanelBody>
+    );
+}
+```
+
+### Props
+
+- **`attributes`**: The block's attributes, including `mediaId`, `mediaUrl`, `imageSize`, and `loading`.
+- **`setAttributes`**: A function to update the block's attributes.
+- **`imageSizeOptions`**: An array of image size options for the `SelectControl`.
+
+---
+
+## Image Component
+
+The `Image` component renders the selected image.
+
+### Component Definition
+
+```javascript
+export function Image({ mediaUrl, variant }) {
+    const classNames =
+        variant === 'cover' ? 'w-100 h-100 object-fit-cover' : 'w-auto h-100';
+
+    return <img className={classNames} src={mediaUrl} alt="Selected Image" />;
+}
+```
+
+### Props
+
+- **`mediaUrl`**: The URL of the image to display.
+- **`variant`**: *(optional)* Determines the CSS class for image rendering. Defaults to `'w-auto h-100'`.
+
+| Variant Value | Class Name                     |
+|---------------|--------------------------------|
+| `'cover'`     | `'w-100 h-100 object-fit-cover'` |
+| *Default*     | `'w-auto h-100'`               |
+
+---
+
+## How to Use
+
+### Import and Use Components
+
+1. Import the required components:
+
+    ```javascript
+    import { ImageSettings, Image, getDefaultImageAttributes } from './path-to-your-file';
+    ```
+
+2. Add the `getDefaultImageAttributes` to your block's attribute definitions:
+
+    ```javascript
+    const attributes = {
+        ...getDefaultImageAttributes,
+        // Other attributes...
+    };
+    ```
+
+3. Include the `ImageSettings` component in your block's settings panel:
+
+    ```javascript
+    <ImageSettings
+        attributes={attributes}
+        setAttributes={setAttributes}
+        imageSizeOptions={[
+            { label: 'Thumbnail', value: 'thumbnail' },
+            { label: 'Medium', value: 'medium' },
+            { label: 'Large', value: 'large' },
+            { label: 'Full', value: 'full' },
+        ]}
+    />
+    ```
+
+4. Use the `Image` component in your block's frontend output:
+
+    ```javascript
+    <Image mediaUrl={attributes.mediaUrl} variant="cover" />
+    ```
+
+---
+
+## Example Usage
+
+### Block Registration
+
+```javascript
+registerBlockType('my-plugin/my-image-block', {
+    attributes: {
+        ...getDefaultImageAttributes,
+        // Other attributes...
+    },
+    edit({ attributes, setAttributes }) {
+        return (
+            <>
+                <ImageSettings
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                    imageSizeOptions={[
+                        { label: 'Thumbnail', value: 'thumbnail' },
+                        { label: 'Medium', value: 'medium' },
+                        { label: 'Large', value: 'large' },
+                        { label: 'Full', value: 'full' },
+                    ]}
+                />
+            </>
+        );
+    },
+    save({ attributes }) {
+        return (
+            <Image mediaUrl={attributes.mediaUrl} variant="cover" />
+        );
+    },
+});
+```
+
+---
+
+## Conclusion
+
+The **Image Component** and **Image Settings** provide a comprehensive solution for handling image management in WordPress blocks, ensuring flexibility and ease of use.
+
+## Class Definition
+
+The `Image_Utils` class is defined within the `basetheme\Utilities` namespace.
+
+```php
+namespace basetheme\Utilities;
+
+class Image_Utils
+{
+    public static function init_image(&$attributes)
+    {
+        if (!isset($attributes['mediaUrl'])) {
+            $attributes["mediaUrl"] = get_theme_file_uri('/assets/images/placeholder-image.png');
+        }
+
+        if (!isset($attributes['imageSize'])) {
+            $attributes["imageSize"] = "full";
+        }
+
+        if (isset($attributes["loading"])) {
+            $attributes["loading"] = "lazy";
+        } else {
+            $attributes["loading"] = "eager";
+        }
+    }
+
+    public static function render_image($attributes, $class = "img-fluid w-100 object-fit-cover")
+    {
+        if (isset($attributes["mediaId"])): ?>
+            <?php echo wp_get_attachment_image(
+                $attributes["mediaId"],
+                $attributes["imageSize"],
+                "",
+                [
+                    "class" => $class,
+                    "loading" => $attributes["loading"]
+                ]
+            ); ?>
+        <?php else: ?>
+            <img src="<?php echo $attributes["mediaUrl"]; ?>" alt="Image" loading="<?php echo $attributes['loading']; ?>" class="<?php echo $class; ?>" />
+        <?php endif;
+    }
+}
+```
+
+---
+
+## Method: `init_image`
+
+### Description
+
+The `init_image` method initializes the provided image attributes, ensuring that all required values are set with defaults if not already provided.
+
+### Parameters
+
+- **`$attributes`**: *(array, passed by reference)* The attributes for the image. This will be updated with default values if necessary.
+
+### Default Values
+
+| Attribute    | Default Value                                  |
+|--------------|-----------------------------------------------|
+| `mediaUrl`   | `/assets/images/placeholder-image.png`         |
+| `imageSize`  | `full`                                        |
+| `loading`    | `lazy` (if provided) or `eager` (if missing)  |
+
+---
+
+## Method: `render_image`
+
+### Description
+
+The `render_image` method outputs an HTML `<img>` tag or a WordPress attachment image based on the provided attributes.
+
+### Parameters
+
+- **`$attributes`**: *(array)* The attributes for the image.
+- **`$class`**: *(string, optional)* Additional CSS classes for the image. Defaults to `"img-fluid w-100 object-fit-cover"`.
+
+### Output Logic
+
+1. If `mediaId` is provided, the method uses `wp_get_attachment_image` to render the WordPress attachment image.
+2. If `mediaId` is not provided, the method outputs a standard `<img>` tag using the `mediaUrl`.
+
+---
+
+## Example Usage
+
+### Initialize Image Attributes
+
+```php
+use basetheme\Utilities\Image_Utils;
+
+$attributes = [
+    'mediaId' => 123,
+    'imageSize' => 'large',
+];
+
+Image_Utils::init_image($attributes);
+// $attributes now contains defaults for 'mediaUrl' and 'loading' if they were not set.
+```
+
+### Render an Image
+
+#### Rendering with `mediaId`
+
+```php
+Image_Utils::render_image(
+    [
+        'mediaId' => 123,
+        'imageSize' => 'large',
+        'loading' => 'lazy',
+    ]
+);
+```
+
+#### Rendering without `mediaId`
+
+```php
+Image_Utils::render_image(
+    [
+        'mediaUrl' => '/path/to/custom-image.jpg',
+        'loading' => 'eager',
+    ],
+    'custom-class'
+);
+```
+
+### Output Example
+
+#### With `mediaId`
+
+```html
+<img src="/wp-content/uploads/image.jpg" class="img-fluid w-100 object-fit-cover" loading="lazy" />
+```
+
+#### Without `mediaId`
+
+```html
+<img src="/path/to/custom-image.jpg" class="custom-class" loading="eager" />
+```
+
+---
+
+## Conclusion
+
+The **Image_Utils** class simplifies image management in PHP-based WordPress themes by providing reusable methods for initializing and rendering images. It ensures consistency and flexibility in handling image attributes.

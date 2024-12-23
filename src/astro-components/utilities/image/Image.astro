@@ -1,0 +1,18 @@
+---
+import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
+import { Image } from 'astro:assets';
+import localBirdImage from '../../../assets/placeholder-image.webp';
+---
+
+<BootstrapProvider>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 bs-border p-3">
+                <Image
+                    src={localBirdImage}
+                    alt="A bird sitting on a nest of eggs."
+                />
+            </div>
+        </div>
+    </div>
+</BootstrapProvider>
