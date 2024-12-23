@@ -1,0 +1,215 @@
+---
+title: Card
+description: This documentation provides an overview of the Card Component, which allows for creating customizable cards with headline, text, and background color options in WordPress blocks.
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Card from "@components/components/card/Card.astro";
+
+<Card />
+
+---
+
+The **Card Component** is designed for use within grid items or other containers. It provides:
+- Customizable background and text colors
+- Editable headline and text content
+- Support for additional child blocks
+
+---
+
+## JavaScript Implementation
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/card`.
+
+```javascript
+registerBlockType('basetheme/card', {
+    title: 'Card',
+    icon: addCard,
+    parent: ['basetheme/grid-item'],
+    category: 'layout',
+    description: 'A Description',
+    keywords: '[]',
+    supports: {},
+    attributes: {
+        colorName: { type: 'string', default: 'white' },
+        ...defaultTextAttributes,
+        headline: {
+            type: 'string',
+            default: 'Headline',
+        },
+    },
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+---
+
+### Attributes
+
+| Attribute   | Type     | Default    | Description                                |
+|-------------|----------|------------|--------------------------------------------|
+| `colorName` | `string` | `'white'`  | Background and text color settings         |
+| `headline`  | `string` | `'Headline'` | Main headline for the card                |
+| `text`      | `string` | `''`       | Additional text content for the card       |
+
+---
+
+### Edit Component
+
+The `EditComponent` allows customization of the card in the WordPress editor.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    let bgColor;
+    let textColor;
+    switch (attributes.colorName) {
+        case 'primary':
+            bgColor = 'bg-primary';
+            textColor = 'text-white';
+            break;
+        case 'secondary':
+            bgColor = 'bg-secondary';
+            textColor = 'text-white';
+            break;
+        case 'black':
+            bgColor = 'bg-black';
+            textColor = 'text-white';
+            break;
+        case 'white':
+            bgColor = 'bg-white';
+            textColor = 'text-black';
+            break;
+        default:
+            bgColor = 'bg-primary';
+            textColor = 'text-white';
+    }
+
+    return (
+        <>
+            <InspectorControls>
+                <ColorSettings
+                    title="Color Settings"
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                />
+            </InspectorControls>
+            <div className={`${bgColor} p-4`}>
+                <Text
+                    attributes={{
+                        text: attributes.headline,
+                    }}
+                    setAttributes={(newAttributes) => {
+                        setAttributes({
+                            headline: newAttributes.text,
+                        });
+                    }}
+                    className={` ${textColor} fs-32`}
+                />
+                <Text
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                    className={`${textColor} fs-18`}
+                />
+            </div>
+        </>
+    );
+}
+```
+
+---
+
+### Save Component
+
+The `SaveComponent` uses `InnerBlocks` to support child blocks.
+
+```javascript
+function SaveComponent() {
+    return <InnerBlocks.Content />;
+}
+```
+
+---
+
+## PHP Implementation
+
+### Initialization
+
+The block attributes are initialized with default values.
+
+```php
+use basetheme\Utilities\Text_Utils;
+use basetheme\Utilities\Button_Utils;
+
+Text_Utils::init_text($attributes);
+Button_Utils::init_button($attributes);
+
+if (!isset($attributes["colorName"])) {
+    $attributes["colorName"] = "white";
+}
+
+$bgColorClass = '';
+$textColorClass = '';
+
+switch ($attributes['colorName']) {
+    case 'primary':
+        $bgColorClass = 'bg-primary';
+        $textColorClass = 'text-white';
+        break;
+    case 'secondary':
+        $bgColorClass = 'bg-secondary';
+        $textColorClass = 'text-white';
+        break;
+    case 'white':
+        $bgColorClass = 'bg-white';
+        $textColorClass = 'text-text';
+        break;
+    default:
+        $bgColorClass = 'bg-primary';
+        $textColorClass = 'text-white';
+        break;
+}
+```
+
+---
+
+### Rendering
+
+The block is rendered as a `<div>` with customizable styles.
+
+```php
+<div class="bs-card <?php echo $bgColorClass; ?> p-4 shadow-lg">
+    <h2 class="<?php echo $textColorClass; ?> fs-32"><?php echo $attributes["headline"]; ?></h2>
+    <?php echo Text_Utils::render_text($attributes["text"], $attributes, "fs-18 mb-5 $textColorClass"); ?>
+</div>
+```
+
+---
+
+## Example Usage
+
+### Editor View
+
+1. Select the background color.
+2. Enter a headline and text content.
+3. Add child blocks if necessary.
+
+### Frontend View
+
+```html
+<div class="bs-card bg-white p-4 shadow-lg">
+    <h2 class="text-black fs-32">Headline</h2>
+    <p class="fs-18 mb-5 text-black">Card content goes here.</p>
+</div>
+```
+
+---
+
+## Conclusion
+
+The **Card Component** is a versatile and reusable block for creating visually appealing cards with customizable settings for headlines, colors, and text.

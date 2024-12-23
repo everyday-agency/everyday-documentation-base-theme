@@ -1,0 +1,26 @@
+---
+const { title, description, color } = Astro.props as {
+    title: string;
+    description: string;
+    color: keyof typeof colorsMap;
+};
+
+// TODO: Map Colors primary to bootstrap colors and text colors to white
+const colorsMap = {
+    primary: 'bg-bootstrap-primary text-bootstrap-white',
+    secondary: 'bg-bootstrap-secondary text-bootstrap-white',
+    white: 'bg-bootstrap-white text-bootstrap-black',
+};
+
+const classNameColor =
+    colorsMap[color] || 'bg-bootstrap-primary text-bootstrap-white';
+---
+
+<div class="col-4">
+    <div class={` ${classNameColor} p-4 bs-shadow-lg`}>
+        <h2 class="fs-32">{title}</h2>
+        <p class="fs-18 mb-5">
+            {description}
+        </p>
+    </div>
+</div>
