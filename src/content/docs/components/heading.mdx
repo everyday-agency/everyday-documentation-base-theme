@@ -1,0 +1,201 @@
+---
+title: Heading
+description: This documentation provides an overview of the Heading Component, which allows for customizable heading elements with selectable levels and alignment in WordPress blocks.
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Heading from "@components/components/heading/Heading.astro"
+
+<Heading />
+
+---
+
+## Overview
+
+The **Heading Component** provides:
+- Selection of heading levels (`h1` through `h6`)
+- Editable text content
+- Alignment controls for left, center, or right alignment
+- Integration with WordPress block editor tools
+
+---
+
+## JavaScript Implementation
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/heading`.
+
+```javascript
+registerBlockType('basetheme/heading', {
+    title: 'Heading',
+    icon: heading,
+    category: 'layout',
+    parent: ['basetheme/grid-item', 'basetheme/container'],
+    description: 'A Description',
+    keywords: ['heading', 'title', 'text'],
+    supports: {},
+    attributes: {
+        tag: {
+            type: 'string',
+            default: 'h1',
+        },
+        text: {
+            type: 'string',
+        },
+        alignment: {
+            type: 'string',
+        },
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+---
+
+### Attributes
+
+| Attribute   | Type     | Default | Description                       |
+|-------------|----------|---------|-----------------------------------|
+| `tag`       | `string` | `'h1'`  | The heading tag (e.g., `h1`, `h2`) |
+| `text`      | `string` | `''`    | The heading text content          |
+| `alignment` | `string` | `'left'`| Alignment of the heading text     |
+
+---
+
+### Edit Component
+
+The `EditComponent` allows users to configure the heading level, text content, and alignment.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    const { tag, text } = attributes;
+
+    function onTagChange(newTag) {
+        setAttributes({ tag: newTag });
+    }
+
+    function onTextChange(newText) {
+        setAttributes({ text: newText });
+    }
+
+    const currentIcon = headingIcons[tag] || headingLevel1;
+
+    let alignmentClass = '';
+    switch (attributes.alignment) {
+        case 'left':
+            alignmentClass = 'text-left';
+            break;
+        case 'center':
+            alignmentClass = 'text-center';
+            break;
+        case 'right':
+            alignmentClass = 'text-right';
+            break;
+        default:
+            alignmentClass = 'text-left';
+    }
+
+    return (
+        <>
+            <BlockControls>
+                <Toolbar label="Überschrift">
+                    <ToolbarDropdownMenu
+                        icon={currentIcon}
+                        label="Wählen Sie eine Überschriftsebene"
+                        controls={[
+                            { title: 'H1', icon: headingLevel1, onClick: () => onTagChange('h1'), isActive: tag === 'h1' },
+                            { title: 'H2', icon: headingLevel2, onClick: () => onTagChange('h2'), isActive: tag === 'h2' },
+                            { title: 'H3', icon: headingLevel3, onClick: () => onTagChange('h3'), isActive: tag === 'h3' },
+                            { title: 'H4', icon: headingLevel4, onClick: () => onTagChange('h4'), isActive: tag === 'h4' },
+                            { title: 'H5', icon: headingLevel5, onClick: () => onTagChange('h5'), isActive: tag === 'h5' },
+                            { title: 'H6', icon: headingLevel6, onClick: () => onTagChange('h6'), isActive: tag === 'h6' },
+                        ]}
+                    />
+                </Toolbar>
+                <AlignmentToolbar
+                    value={attributes.alignment}
+                    onChange={(newVal) => setAttributes({ alignment: newVal })}
+                />
+            </BlockControls>
+
+            <RichText
+                tagName={tag}
+                value={text}
+                onChange={onTextChange}
+                placeholder="Überschrift eingeben..."
+                className={alignmentClass}
+            />
+        </>
+    );
+}
+```
+
+---
+
+## PHP Implementation
+
+The PHP logic ensures the proper rendering of the heading with the selected attributes.
+
+### Initialization and Defaults
+
+```php
+if (!isset($attributes["tag"])) {
+    $attributes["tag"] = "h1";
+}
+
+if (!isset($attributes["alignment"])) {
+    $attributes["alignment"] = "left";
+}
+
+$alignmentClass = "text-left";
+switch ($attributes["alignment"]) {
+    case "left":
+        $alignmentClass = "text-left";
+        break;
+    case "center":
+        $alignmentClass = "text-center";
+        break;
+    case "right":
+        $alignmentClass = "text-right";
+        break;
+    default:
+        $alignmentClass = "text-left";
+        break;
+}
+```
+
+---
+
+### Rendering
+
+The heading is rendered dynamically using the attributes.
+
+```php
+echo "<{$attributes['tag']} class='bs-heading heading {$alignmentClass}'>{$attributes['text']}</{$attributes["tag"]}>";
+```
+
+---
+
+## Example Usage
+
+### Editor View
+
+1. Select the heading level (e.g., H1, H2).
+2. Enter the heading text.
+3. Adjust the alignment (left, center, or right).
+
+### Frontend View
+
+```html
+<h1 class="bs-heading heading text-left">Heading Text</h1>
+```
+
+---
+
+## Conclusion
+
+The **Heading Component** provides a robust and flexible solution for managing headings in WordPress blocks, offering dynamic configuration for heading levels, alignment, and content.
