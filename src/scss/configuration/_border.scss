@@ -1,0 +1,20 @@
+@import "colors";
+
+$border-width: 1px;
+$border-widths: (
+    1: 1px,
+    2: 2px,
+    3: 3px,
+    4: 4px,
+    5: 5px
+);
+$border-style: solid;
+$border-color: $color-gray-500;
+$border-color-translucent: rgba($color-black, .175);
+$border-width: 1px;
+
+.bs-border {
+    border-style: $border-style;
+    border-width: $border-width;
+    border-color: $border-color;
+}
