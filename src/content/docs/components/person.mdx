@@ -1,0 +1,222 @@
+---
+title: Person
+description: This documentation provides an overview of the Person Component, which allows for creating a block that displays individual person profiles with customizable attributes such as image, name, position, email, and phone.
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Person from "@components/components/Person/Person.astro";
+
+<Person />
+
+---
+
+The **Person Component** is designed to showcase team members, contacts, or other individuals with:
+- Customizable image
+- Editable first name, last name, and position
+- Contact details (email and phone)
+
+---
+
+## JavaScript Implementation
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/person`.
+
+```javascript
+registerBlockType('basetheme/person', {
+    title: 'Person',
+    icon: people,
+    parent: ['basetheme/grid-item', 'basetheme/container'],
+    supports: {},
+    attributes: {
+        ...getDefaultImageAttributes,
+        ...defaultTextAttributes,
+        firstname: { type: 'string', default: 'First Name' },
+        lastname: { type: 'string', default: 'Last Name' },
+        position: { type: 'string', default: 'Position' },
+        email: { type: 'string', default: 'Email' },
+        phone: { type: 'string', default: 'Phone' },
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+---
+
+### Attributes
+
+| Attribute   | Type     | Default        | Description                             |
+|-------------|----------|----------------|-----------------------------------------|
+| `firstname` | `string` | `'First Name'` | First name of the person                |
+| `lastname`  | `string` | `'Last Name'`  | Last name of the person                 |
+| `position`  | `string` | `'Position'`   | Position or title of the person         |
+| `email`     | `string` | `'Email'`      | Email address                           |
+| `phone`     | `string` | `'Phone'`      | Phone number                            |
+
+---
+
+### Edit Component
+
+The `EditComponent` allows customization of person attributes in the WordPress editor.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    return (
+        <>
+            <InspectorControls>
+                <ImageSettings
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                    imageSizeOptions={[
+                        { value: 'pageBanner', label: 'Banner' },
+                        { value: 'full', label: 'Full' },
+                        { value: 'medium', label: 'Medium' },
+                        { value: 'partnerLogo', label: 'Partner Logo' },
+                    ]}
+                />
+            </InspectorControls>
+
+            <div className="position-relative ratio ratio-1x1">
+                <Image mediaUrl={attributes.mediaUrl} alt="Upload Image" />
+                <div className="position-absolute bottom-0 p-3">
+                    <Text
+                        attributes={{ text: attributes.firstname }}
+                        setAttributes={(newVal) =>
+                            setAttributes({ firstname: newVal.text })
+                        }
+                        enableAlignment={false}
+                    />
+                    <Text
+                        attributes={{ text: attributes.lastname }}
+                        setAttributes={(newVal) =>
+                            setAttributes({ lastname: newVal.text })
+                        }
+                        enableAlignment={false}
+                    />
+                    <Text
+                        attributes={{ text: attributes.position }}
+                        setAttributes={(newVal) =>
+                            setAttributes({ position: newVal.text })
+                        }
+                        enableAlignment={false}
+                    />
+                    <Text
+                        attributes={{ text: attributes.email }}
+                        setAttributes={(newVal) =>
+                            setAttributes({ email: newVal.text })
+                        }
+                        enableAlignment={false}
+                    />
+                    <Text
+                        attributes={{ text: attributes.phone }}
+                        setAttributes={(newVal) =>
+                            setAttributes({ phone: newVal.text })
+                        }
+                        enableAlignment={false}
+                    />
+                </div>
+            </div>
+        </>
+    );
+}
+```
+
+---
+
+## PHP Implementation
+
+### Initialization
+
+The block attributes are initialized with default values.
+
+```php
+use basetheme\Utilities\Image_Utils;
+use basetheme\Utilities\Text_Utils;
+
+if (!isset($attributes['firstname'])) {
+    $attributes['firstname'] = 'Vorname';
+}
+
+if (!isset($attributes['lastname'])) {
+    $attributes['lastname'] = 'Nachname';
+}
+
+if (!isset($attributes['position'])) {
+    $attributes['position'] = 'Position';
+}
+
+Image_Utils::init_image($attributes);
+```
+
+---
+
+### Rendering
+
+The block is rendered as a `<div>` with a ratio-based layout and contact details.
+
+```php
+<div class="bs-person person">
+    <div class="position-relative person-wrapper ratio ratio-1x1">
+        <div class="person-image">
+            <?php Image_Utils::render_image($attributes, "h-100 w-100 object-fit-cover"); ?>
+        </div>
+        <div class="position-absolute bottom-0 start-0 end-0 p-3 person-content">
+            <h3 class="text-white"><?php echo $attributes['firstname'] . ' ' . $attributes['lastname']; ?></h3>
+            <p class="text-white"><?php echo $attributes['position']; ?></p>
+            <?php if (isset($attributes['email'])): ?>
+                <div>
+                    <a href="mailto:<?php echo $attributes['email']; ?>" class="text-white"><?php echo $attributes['email']; ?></a>
+                </div>
+            <?php endif; ?>
+            <?php if (isset($attributes['phone'])): ?>
+                <div>
+                    <a href="tel:<?php echo $attributes['phone']; ?>" class="text-white"><?php echo $attributes['phone']; ?></a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+```
+
+---
+
+## Example Usage
+
+### Editor View
+
+1. Upload an image for the person.
+2. Enter the first name, last name, and position.
+3. Provide email and phone contact details.
+
+### Frontend View
+
+```html
+<div class="bs-person person">
+    <div class="position-relative person-wrapper ratio ratio-1x1">
+        <div class="person-image">
+            <img src="/path/to/image.jpg" class="h-100 w-100 object-fit-cover" alt="Person">
+        </div>
+        <div class="position-absolute bottom-0 start-0 end-0 p-3 person-content">
+            <h3 class="text-white">John Doe</h3>
+            <p class="text-white">Software Engineer</p>
+            <div>
+                <a href="mailto:john.doe@example.com" class="text-white">john.doe@example.com</a>
+            </div>
+            <div>
+                <a href="tel:+123456789" class="text-white">+123456789</a>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+---
+
+## Conclusion
+
+The **Person Component** is an ideal solution for creating visually appealing and functional team member profiles or contact cards in WordPress.

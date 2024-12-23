@@ -2,8 +2,14 @@
 import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
 import { Image } from 'astro:assets';
 import placeholderImage from '../../../assets/placeholder-image.webp';
+
+const { class: className } = Astro.props;
 ---
 
 <BootstrapProvider>
-    <Image src={placeholderImage} alt="A bird sitting on a nest of eggs." />
+    <Image
+        src={placeholderImage}
+        class={className}
+        alt="A bird sitting on a nest of eggs."
+    />
 </BootstrapProvider>
