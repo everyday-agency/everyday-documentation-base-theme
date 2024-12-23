@@ -59,5 +59,18 @@
       "import { Code } from '@astrojs/starlight/components';"
     ],
     "description": "Insert MDX Documentation for Astro with Capitalized Title, Description, Sidebar Order, and Badge"
-  }
+  },
+    "Add new Bootstrap Provider": {
+      "prefix": "astro-bs",
+      "body": [
+        "---",
+        "import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';",
+        "---",
+        "",
+        "<BootstrapProvider>",
+        "    <div></div>",
+        "</BootstrapProvider>"
+      ],
+      "description": "Insert Bootstrap Provider with a div"
+    }
 }

@@ -1,0 +1,290 @@
+---
+title: Button
+description: This documentation provides an overview of the Button Component, Button Settings, and Button Utilities, which handle button creation, styling, and rendering for WordPress blocks and themes.
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Button from "@components/utilities/button/Button.astro";
+
+<Button/>
+
+## Button Component
+
+The **Button Component** allows users to create and manage buttons in WordPress blocks. It includes features for setting button text, colors, alignment, and link properties.
+
+---
+
+## Import Information
+
+### JavaScript Import
+
+```javascript
+import { Button, defaultButtonAttributes } from '../../utilities/button/button';
+```
+
+```javascript
+    attributes: {
+        ...defaultButtonAttributes,
+        // Other attributes...
+    },
+```
+
+```javascript
+<Button
+    attributes={attributes}
+    setAttributes={setAttributes}
+/>
+```
+
+### PHP Import
+
+```php
+use basetheme\Utilities\Button_Utils;
+Button_Utils::init_button($attributes);
+```
+
+```php
+<?php Button_Utils::render_button($attributes); ?>
+```
+
+---
+
+### Default Attributes
+
+The `defaultButtonAttributes` object defines the default attributes for the button component.
+
+```javascript
+export const defaultButtonAttributes = {
+    ...defaultColorNameAttributes,
+    ...defaultSpacerAttributes,
+    ...defaultAlignAttributes,
+    linkText: { type: 'string', default: 'Mehr erfahren' },
+    linkObject: { type: 'object', default: { url: '' } },
+    buttonColorName: { type: 'string', default: 'primary' },
+};
+```
+
+- **`linkText`**: The text displayed on the button. Defaults to `'Mehr erfahren'`.
+- **`linkObject`**: An object containing link properties such as URL and target.
+- **`buttonColorName`**: The button's color. Defaults to `'primary'`.
+
+---
+
+### ButtonSettings Component
+
+The `ButtonSettings` component provides controls for customizing button attributes.
+
+```javascript
+export function ButtonSettings({
+    attributes,
+    setAttributes,
+    setIsLinkPickerVisible,
+}) {
+    function buttonHandler() {
+        setIsLinkPickerVisible((prev) => !prev);
+    }
+
+    return (
+        <>
+            <BlockControls>
+                <ToolbarGroup>
+                    <ToolbarButton onClick={buttonHandler} icon={link} />
+                </ToolbarGroup>
+            </BlockControls>
+            <InspectorControls>
+                <ColorSettings
+                    title="Button Color Settings"
+                    attributes={{ colorName: attributes.buttonColorName }}
+                    setAttributes={(newAttrs) => {
+                        if (newAttrs.colorName) {
+                            setAttributes({
+                                buttonColorName: newAttrs.colorName,
+                            });
+                        }
+                    }}
+                />
+                <SpacerSettings
+                    title="Container Settings"
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                />
+                <AlignSettings
+                    title="Alignment Settings"
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                />
+            </InspectorControls>
+        </>
+    );
+}
+```
+
+---
+
+### Button Component
+
+The `Button` component renders the button with its defined attributes.
+
+```javascript
+export function Button({ attributes, setAttributes }) {
+    const [isLinkPickerVisible, setIsLinkPickerVisible] = useState(false);
+
+    function handleLinkChange(newLink) {
+        setAttributes({ linkObject: newLink });
+    }
+
+    function handleTextChange(setText) {
+        setAttributes({ linkText: setText });
+    }
+
+    let buttonColor;
+    let textColor;
+
+    switch (attributes.buttonColorName) {
+        case 'primary':
+            buttonColor = 'primary';
+            textColor = 'text-white';
+            break;
+        case 'secondary':
+            buttonColor = 'secondary';
+            textColor = 'text-white';
+            break;
+        case 'white':
+            buttonColor = 'white';
+            textColor = 'text-black';
+            break;
+        case 'gray':
+            buttonColor = 'gray-500';
+            textColor = 'text-primary';
+            break;
+        default:
+            buttonColor = 'primary';
+            textColor = 'text-white';
+    }
+
+    return (
+        <>
+            <ButtonSettings
+                attributes={attributes}
+                setAttributes={setAttributes}
+                isLinkPickerVisible={isLinkPickerVisible}
+                setIsLinkPickerVisible={setIsLinkPickerVisible}
+            />
+            <div className={`d-flex ${alignClass(attributes.align)}`}>
+                <RichText
+                    allowedFormats={[]}
+                    tagName="a"
+                    className={`btn btn-${buttonColor} ${textColor} ${spacerClass(attributes.spacer)}`}
+                    value={attributes.linkText}
+                    onChange={handleTextChange}
+                />
+            </div>
+            {isLinkPickerVisible && (
+                <Popover position="middle center">
+                    <LinkControl
+                        settings={[
+                            {
+                                id: 'openInNewTab',
+                                title: 'Öffnen in neuem Tab',
+                            },
+                        ]}
+                        value={attributes.linkObject}
+                        onChange={handleLinkChange}
+                    />
+                    <WordPressButton
+                        variant="primary"
+                        onClick={() => setIsLinkPickerVisible(false)}
+                        style={{ display: 'block', width: '100%' }}
+                    >
+                        Confirm Link
+                    </WordPressButton>
+                </Popover>
+            )}
+        </>
+    );
+}
+```
+
+---
+
+## Button Utilities
+
+### Overview
+
+The **Button_Utils** class standardizes button initialization and rendering for WordPress themes, ensuring consistent styling and behavior.
+
+---
+
+### Class Definition
+
+```php
+namespace basetheme\Utilities;
+
+class Button_Utils
+{
+    public static function init_button($attributes)
+    {
+        if (!isset($attributes['linkObject'])) {
+            return;
+        }
+
+        if (!isset($attributes['linkObject']["openInNewTab"])) {
+            $attributes['linkObject']['openInNewTab'] = false;
+        }
+
+        if (!isset($attributes['linkText'])) {
+            $attributes['linkText'] = 'Mehr erfahren';
+        }
+
+        if (!isset($attributes['buttonColorName'])) {
+            $attributes['buttonColorName'] = 'primary';
+        }
+    }
+
+    public static function render_button($attributes)
+    {
+        if (!isset($attributes['linkObject'])) {
+            return;
+        }
+
+        $linkUrl = $attributes['linkObject']['url'];
+
+        if (strpos($linkUrl, 'https://') === false && strpos($linkUrl, 'http://') === false) {
+            $linkUrl = 'https://' . $linkUrl;
+        }
+
+        $colorClass = '';
+        $textColorClass = '';
+        switch ($attributes['buttonColorName']) {
+            case 'primary':
+                $colorClass = 'btn-primary';
+                $textColorClass = 'text-white';
+                break;
+            case 'secondary':
+                $colorClass = 'btn-secondary';
+                $textColorClass = 'text-white';
+                break;
+            case 'white':
+                $colorClass = 'btn-white';
+                $textColorClass = 'text-text';
+                break;
+            case 'gray':
+                $colorClass = 'btn-gray-500';
+                $textColorClass = 'text-primary';
+                break;
+            default:
+                $colorClass = 'btn-primary';
+                $textColorClass = 'text-white';
+        }
+
+        echo "<a href='{$linkUrl}' class='btn {$colorClass} {$textColorClass}' target='" . ($attributes['linkObject']['openInNewTab'] ? "_blank" : "_self") . "'>{$attributes['linkText']}</a>";
+    }
+}
+```
+
+---
+
+## Conclusion
+
+The **Button Component** and **Button Utilities** provide a comprehensive solution for managing buttons in WordPress blocks and themes, offering flexibility and consistency for both editors and frontends.
