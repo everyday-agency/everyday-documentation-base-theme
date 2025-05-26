@@ -39,4 +39,14 @@ export default defineConfig({
             ],
         }),
     ],
+
+    vite: {
+        resolve: {
+            alias: {
+                '@components': path.resolve('./src/astro-components'),
+                '@scss': path.resolve('./src/scss'),
+                '@js': path.resolve('./src/js'),
+            },
+        },
+    },
 });
