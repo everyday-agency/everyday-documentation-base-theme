@@ -1,0 +1,9 @@
+@import "../configuration/colors";
+
+.grid-item {
+    height: 10rem;
+}
+
+.grid-border {
+    border: 1px dotted $color-gray-500 !important;
+}
