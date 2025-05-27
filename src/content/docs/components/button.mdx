@@ -1,0 +1,119 @@
+---
+title: Button
+description: This documentation provides an overview of the Button Component, which renders customizable call-to-action buttons in WordPress blocks.
+sidebar:
+  badge:
+    text: New
+    variant: note
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Button from "@components/utilities/button/Button.astro";
+
+<Button title="Button Primary" color="primary"/>
+<Button title="Button Secondary" color="secondary"/>
+
+---
+
+The **Button Component** provides:
+- Customizable button text and link
+- Variant selection for button styling
+- Integration with WordPress block editor
+
+---
+
+## JavaScript Implementation
+
+### Block Registration
+
+```javascript
+import { registerBlockType } from '@wordpress/blocks';
+import { button } from '@wordpress/icons';
+import { Button, defaultButtonAttributes } from '../../utilities/button/button';
+
+registerBlockType('basetheme/button', {
+    title: 'Button',
+    icon: button,
+    category: 'layout',
+    parent: ['basetheme/container', 'basetheme/grid-item'],
+    description: 'A Description',
+    keywords: [],
+    supports: {},
+    attributes: {
+        ...defaultButtonAttributes,
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+---
+
+### Edit Component
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    return (
+        <>
+            <Button attributes={attributes} setAttributes={setAttributes} />
+        </>
+    );
+}
+```
+
+---
+
+## PHP Implementation
+
+### Initialization and Rendering
+
+```php
+<?php
+
+use basetheme\Utilities\Button_Utils;
+
+Button_Utils::init_button($attributes);
+?>
+
+<div class="bs-button button-wrapper">
+    <?php Button_Utils::render_button($attributes); ?>
+</div>
+```
+
+---
+
+## Attributes
+
+The `defaultButtonAttributes` object defines the expected button attributes.
+
+| Attribute         | Type     | Default          | Description                    |
+|-------------------|----------|------------------|--------------------------------|
+| `linkText`        | `string` | `'Mehr erfahren'`| The button text                |
+| `linkObject`      | `object` | `{ url: '' }`    | Button link object             |
+| `buttonColorName` | `string` | `'primary'`      | Button color variant (e.g., primary, secondary) |
+
+---
+
+## Example Usage
+
+### Block Editor
+
+1. Input the button text (e.g., "Learn More").
+2. Set the link target using the link object control.
+3. Choose a color variant (e.g., primary, secondary).
+
+### Frontend Output
+
+```html
+<div class="bs-button button-wrapper">
+    <a href="#" class="btn btn-primary">Mehr erfahren</a>
+</div>
+```
+
+---
+
+## Conclusion
+
+The **Button Component** is a reusable utility for call-to-action links. It enables customization of text, link, and style, ensuring consistent design across your WordPress theme.
