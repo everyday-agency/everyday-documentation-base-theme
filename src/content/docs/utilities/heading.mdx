@@ -1,0 +1,247 @@
+---
+title: Heading
+description: This documentation provides an overview of the Heading component, which supports heading levels, alignment, and text content for custom WordPress blocks.
+sidebar:
+  badge:
+    text: New
+    variant: note
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Heading from "@components/utilities/heading/Heading.astro";
+
+<Heading level="1" heading="This is a heading 1" />
+<Heading level="2" heading="This is a heading 2" />
+<Heading level="3" heading="This is a heading 3" />
+<Heading level="4" heading="This is a heading 4" />
+<Heading level="5" heading="This is a heading 5" />
+<Heading level="6" heading="This is a heading 6" />
+
+---
+
+## Heading Component
+
+The **Heading** component provides a flexible interface for defining heading content in WordPress blocks. It supports level selection (`h1`–`h6`), text alignment, and customizable classes.
+
+---
+
+## Import Information
+
+### JavaScript Import
+
+```javascript
+import { Heading, defaultHeadingAttributes } from '../../utilities/heading/heading';
+```
+
+```javascript
+attributes: {
+    ...defaultHeadingAttributes,
+    // Other attributes...
+}
+```
+
+```jsx
+<Heading
+    attributes={attributes}
+    setAttributes={setAttributes}
+    enableAlignment={true}
+    enableLevelSelection={true}
+    className="custom-heading"
+/>
+```
+
+### PHP Import
+
+```php
+use basetheme\Utilities\Heading_Utils;
+
+Heading_Utils::init_heading($attributes);
+```
+
+```php
+<?php echo Heading_Utils::render_heading($attributes["heading"], $attributes, "custom-class"); ?>
+```
+
+---
+
+## Default Attributes
+
+```javascript
+export const defaultHeadingAttributes = {
+    tag: {
+        type: 'string',
+        default: 'h1',
+    },
+    heading: {
+        type: 'string',
+    },
+    alignment: {
+        type: 'string',
+    },
+};
+```
+
+- **`tag`**: Defines the heading level (`h1`–`h6`).
+- **`heading`**: The text content of the heading.
+- **`alignment`**: Text alignment (`'left'`, `'center'`, `'right'`).
+
+---
+
+## Component Definition
+
+```javascript
+export function Heading({
+    attributes,
+    setAttributes,
+    enableAlignment = true,
+    enableLevelSelection = true,
+    className = '',
+}) {
+    const { tag = 'h1', heading, alignment } = attributes;
+
+    const alignmentClass = alignment === 'center'
+        ? 'text-center'
+        : alignment === 'right'
+        ? 'text-right'
+        : 'text-left';
+
+    const combinedClassName = `${alignmentClass} ${className}`.trim();
+
+    return (
+        <>
+            <BlockControls>
+                {enableLevelSelection && (
+                    <Toolbar label="Überschrift">
+                        <ToolbarDropdownMenu
+                            icon={headingIcons[tag]}
+                            label="Wählen Sie eine Überschriftsebene"
+                            controls={['h1','h2','h3','h4','h5','h6'].map(level => ({
+                                title: level.toUpperCase(),
+                                icon: headingIcons[level],
+                                onClick: () => setAttributes({ tag: level }),
+                                isActive: tag === level,
+                            }))}
+                        />
+                    </Toolbar>
+                )}
+
+                {enableAlignment && (
+                    <AlignmentToolbar
+                        value={alignment}
+                        onChange={(newAlign) => setAttributes({ alignment: newAlign })}
+                    />
+                )}
+            </BlockControls>
+
+            <RichText
+                tagName={tag}
+                value={heading}
+                onChange={(newText) => setAttributes({ heading: newText })}
+                placeholder="Überschrift eingeben..."
+                className={combinedClassName}
+            />
+        </>
+    );
+}
+```
+
+---
+
+## PHP Rendering
+
+```php
+<?php
+
+namespace basetheme\Utilities;
+
+class Heading_Utils
+{
+    public static function init_heading(&$attributes)
+    {
+        if (!isset($attributes["tag"])) {
+            $attributes["tag"] = "h1";
+        }
+
+        if (!isset($attributes["alignment"])) {
+            $attributes["alignment"] = "left";
+        }
+    }
+
+    public static function render_heading($heading, $attributes, $class = "heading")
+    {
+        $alignmentClass = "text-left";
+        switch ($attributes["alignment"]) {
+            case "left":
+                $alignmentClass = "text-start";
+                break;
+            case "center":
+                $alignmentClass = "text-center";
+                break;
+            case "right":
+                $alignmentClass = "text-end";
+                break;
+            default:
+                $alignmentClass = "text-start";
+        }
+
+        return '<' . $attributes["tag"] . ' class="' . $alignmentClass . ' ' . $class . '">' . $heading . '</' . $attributes["tag"] . '>';
+    }
+}
+```
+
+---
+
+## Alignment Classes
+
+| Alignment | CSS Class    |
+|-----------|--------------|
+| `left`    | `text-start` |
+| `center`  | `text-center`|
+| `right`   | `text-end`   |
+| *Default* | `text-start` |
+
+---
+
+## Example Usage
+
+### Block Registration
+
+```javascript
+registerBlockType('my-plugin/heading-block', {
+    attributes: {
+        ...defaultHeadingAttributes,
+    },
+    EditComponent({ attributes, setAttributes }) {
+        return (
+            <Heading
+                attributes={attributes}
+                setAttributes={setAttributes}
+                className="custom-heading"
+            />
+        );
+    },
+});
+```
+
+### PHP Rendering
+
+```php
+<?php
+namespace basetheme\Utilities;
+
+Heading_Utils::init_heading($attributes);
+
+?>
+
+<div>
+    <?php echo Heading_Utils::render_heading($attributes["heading"], $attributes, "custom-class"); ?>
+</div>
+```
+
+
+---
+
+## Conclusion
+
+The **Heading** component is a robust utility for custom WordPress blocks, enabling dynamic heading level selection and alignment. This improves content structure, accessibility, and design consistency.

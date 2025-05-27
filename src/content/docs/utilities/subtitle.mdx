@@ -1,0 +1,210 @@
+---
+title: Subtitle
+description: This documentation provides an overview of the Subtitle component, which adds secondary text support with alignment control in custom WordPress blocks.
+sidebar:
+  badge:
+    text: New
+    variant: note
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Subtitle from "@components/utilities/subtitle/SubTitle.astro";
+
+<Subtitle subtitle="This is a subtitle." />
+
+---
+
+## Subtitle Component
+
+The **Subtitle** component is designed for adding a secondary line of text to WordPress blocks, with support for basic formatting and text alignment.
+
+---
+
+## Import Information
+
+### JavaScript Import
+
+```javascript
+import { Subtitle, defaultSubtitleAttributes } from '../../utilities/title/subtitle';
+```
+
+```javascript
+attributes: {
+    ...defaultSubtitleAttributes,
+    // Other attributes...
+}
+```
+
+```jsx
+<Subtitle
+    attributes={attributes}
+    setAttributes={setAttributes}
+    className="custom-subtitle"
+/>
+```
+
+### PHP Import
+
+```php
+use basetheme\Utilities\Subtitle;
+
+Subtitle::init_subtitle($attributes);
+```
+
+```php
+<?php echo Subtitle::render_subtitle($attributes["subtitle"], $attributes, "custom-subtitle"); ?>
+```
+
+---
+
+## Default Attributes
+
+```javascript
+export const defaultSubtitleAttributes = {
+    subtitle: {
+        type: 'string',
+        default: 'Subtitle',
+    },
+    alignment: {
+        type: 'string',
+    },
+};
+```
+
+- **`subtitle`**: The subtitle text.
+- **`alignment`**: Text alignment (`'left'`, `'center'`, `'right'`).
+
+---
+
+## Component Definition
+
+```javascript
+export function Subtitle({ attributes, setAttributes, className = '' }) {
+    let alignmentClass = '';
+    switch (attributes.alignment) {
+        case 'left':
+            alignmentClass = 'text-start';
+            break;
+        case 'center':
+            alignmentClass = 'text-center';
+            break;
+        case 'right':
+            alignmentClass = 'text-end';
+            break;
+        default:
+            alignmentClass = 'text-start';
+    }
+
+    const combinedClassName = `${alignmentClass} ${className}`.trim();
+
+    return (
+        <RichText
+            allowedFormats={['core/bold', 'core/italic']}
+            tagName="p"
+            value={attributes.subtitle}
+            onChange={(newSubtitle) => setAttributes({ subtitle: newSubtitle })}
+            placeholder="Subtitle eingabe..."
+            className={combinedClassName}
+        />
+    );
+}
+```
+
+---
+
+## PHP Rendering
+
+```php
+<?php
+
+namespace basetheme\Utilities;
+
+class Subtitle
+{
+    public static function init_subtitle(&$attributes)
+    {
+        if (!isset($attributes["alignment"])) {
+            $attributes["alignment"] = "left";
+        }
+    }
+
+    public static function render_subtitle($subtitle, $attributes, $class = "subtitle")
+    {
+        if (!isset($attributes["alignment"])) {
+            $attributes["alignment"] = "left";
+        }
+
+        $alignmentClass = "text-left";
+        switch ($attributes["alignment"]) {
+            case "left":
+                $alignmentClass = "text-start";
+                break;
+            case "center":
+                $alignmentClass = "text-center";
+                break;
+            case "right":
+                $alignmentClass = "text-end";
+                break;
+            default:
+                $alignmentClass = "text-start";
+        }
+
+        return '<p class="' . $alignmentClass . ' ' . $class . '">' . $subtitle . '</p>';
+    }
+}
+```
+
+---
+
+## Alignment Classes
+
+| Alignment | CSS Class    |
+|-----------|--------------|
+| `left`    | `text-start` |
+| `center`  | `text-center`|
+| `right`   | `text-end`   |
+| *Default* | `text-start` |
+
+---
+
+## Example Usage
+
+### Block Registration
+
+```javascript
+registerBlockType('my-plugin/subtitle-block', {
+    attributes: {
+        ...defaultSubtitleAttributes,
+    },
+    edit({ attributes, setAttributes }) {
+        return (
+            <Subtitle
+                attributes={attributes}
+                setAttributes={setAttributes}
+                className="custom-subtitle"
+            />
+        );
+    },
+});
+```
+
+### PHP Rendering
+
+```php
+<?php
+namespace basetheme\Utilities;
+
+Subtitle::init_subtitle($attributes);
+?>
+
+<div>
+    <?php echo Subtitle::render_subtitle($attributes["subtitle"], $attributes, "custom-subtitle"); ?>
+</div>
+```
+
+---
+
+## Conclusion
+
+The **Subtitle** component complements the heading or text content with a secondary description or supporting line. It supports alignment and basic formatting, making it ideal for teasers, banners, and content sections.

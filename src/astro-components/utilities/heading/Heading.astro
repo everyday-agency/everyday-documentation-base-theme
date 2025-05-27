@@ -1,0 +1,11 @@
+---
+const { heading, level } = Astro.props;
+
+import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
+
+const HeadingTag = `h${level}`;
+---
+
+<BootstrapProvider>
+    <HeadingTag class="fw-bold">{heading}</HeadingTag>
+</BootstrapProvider>

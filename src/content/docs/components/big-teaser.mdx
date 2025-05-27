@@ -1,16 +1,16 @@
 ---
 title: Big Teaser
-description: This documentation provides an overview of the Big-Teaser Component, which combines image, text, and button utilities to create a feature-rich teaser block in WordPress.
+description: This documentation provides an overview of the Big-Teaser Component, which combines image, heading, subtitle, and button utilities to create a feature-rich teaser block in WordPress.
 sidebar:
   badge:
-    text: Caution
-    variant: caution
+    text: Updated
+    variant: note
 ---
 
 import { Code } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-<Aside type="caution">The Big Teaser needs to be updated to include two new utilities: Title and Subtitle, for building more standardized components.</Aside>
+<Aside type="note">The Big Teaser now includes utilities for standardized Heading and Subtitle components.</Aside>
 
 import BigTeaser from "@components/components/BigTeaser/BigTeaser.astro";
 
@@ -20,7 +20,8 @@ import BigTeaser from "@components/components/BigTeaser/BigTeaser.astro";
 
 The **Big-Teaser Component** is a customizable block that integrates:
 - **Image Component**: For displaying a background image.
-- **Text Component**: For displaying a title and subtitle.
+- **Heading Component**: For displaying the main title.
+- **Subtitle Component**: For displaying a supporting subtitle.
 - **Button Component**: For adding a call-to-action button.
 - **Spacer Settings**: For adjusting container spacing.
 
@@ -32,8 +33,6 @@ It supports both the WordPress block editor (Gutenberg) and frontend rendering.
 
 ### Block Registration
 
-The block is registered using the `registerBlockType` method.
-
 ```javascript
 registerBlockType('basetheme/big-teaser', {
     title: 'Big-teaser',
@@ -41,9 +40,9 @@ registerBlockType('basetheme/big-teaser', {
     supports: {},
     attributes: {
         ...getDefaultImageAttributes,
-        spacer: { type: 'string', default: '' },
-        title: { type: 'string', default: 'Title' },
-        subtitle: { type: 'string', default: 'Subtitle' },
+        ...defaultHeadingAttributes,
+        ...defaultSubtitleAttributes,
+        ...defaultSpacerAttributes,
         ...defaultButtonAttributes,
     },
     edit: EditComponent,
@@ -59,8 +58,8 @@ registerBlockType('basetheme/big-teaser', {
 |-------------------|-----------|----------------------|---------------------------------------|
 | `mediaUrl`        | `string`  | Placeholder image URL| The URL of the image.                |
 | `spacer`          | `string`  | `''`                | Spacer class for container spacing.  |
-| `title`           | `string`  | `'Title'`           | The teaser title.                    |
-| `subtitle`        | `string`  | `'Subtitle'`        | The teaser subtitle.                 |
+| `heading`         | `string`  | `'Title'`           | The main heading.                    |
+| `subtitle`        | `string`  | `'Subtitle'`        | The subtitle text.                   |
 | `linkText`        | `string`  | `'Mehr erfahren'`    | Button text.                         |
 | `linkObject`      | `object`  | `{ url: '' }`       | Button link properties.              |
 | `buttonColorName` | `string`  | `'primary'`         | Button color.                        |
@@ -68,8 +67,6 @@ registerBlockType('basetheme/big-teaser', {
 ---
 
 ### Edit Component
-
-The `EditComponent` renders the block's editor interface with Inspector controls for customizing attributes.
 
 ```javascript
 function EditComponent(props) {
@@ -107,18 +104,14 @@ function EditComponent(props) {
                         <div className="container">
                             <div className="row">
                                 <div className="col-12">
-                                    <Text
-                                        attributes={{ text: attributes.title }}
-                                        setAttributes={(newAttributes) =>
-                                            setAttributes({ title: newAttributes.text })
-                                        }
+                                    <Heading
+                                        attributes={attributes}
+                                        setAttributes={setAttributes}
                                         className="text-white fs-36 fw-bold"
                                     />
-                                    <Text
-                                        attributes={{ text: attributes.subtitle }}
-                                        setAttributes={(newAttributes) =>
-                                            setAttributes({ subtitle: newAttributes.text })
-                                        }
+                                    <Subtitle
+                                        attributes={attributes}
+                                        setAttributes={setAttributes}
                                         className="text-white fs-24 fw-bold"
                                     />
                                     <Button
@@ -140,7 +133,7 @@ function EditComponent(props) {
 
 ## PHP Implementation
 
-The backend logic ensures that the required attributes are initialized and renders the block content using utilities for image, text, and button rendering.
+The backend logic initializes necessary attributes and renders the block using utility functions for image, heading, subtitle, and button.
 
 ---
 
@@ -150,18 +143,13 @@ The backend logic ensures that the required attributes are initialized and rende
 use basetheme\Utilities\Image_Utils;
 use basetheme\Utilities\Spacer_Utils;
 use basetheme\Utilities\Button_Utils;
-use basetheme\Utilities\Text_Utils;
+use basetheme\Utilities\Heading_Utils;
+use basetheme\Utilities\Subtitle;
 
 Image_Utils::init_image($attributes);
 Button_Utils::init_button($attributes);
-
-if (!isset($attributes["title"])) {
-    $attributes["title"] = "";
-}
-
-if (!isset($attributes["subtitle"])) {
-    $attributes["subtitle"] = "";
-}
+Heading_Utils::init_heading($attributes);
+Subtitle::init_subtitle($attributes);
 
 if (!isset($attributes["spacer"])) {
     $attributes["spacer"] = "";
@@ -180,8 +168,8 @@ if (!isset($attributes["spacer"])) {
             <div class="container">
                 <div class="row">
                     <div class="col-12">
-                        <?php echo Text_Utils::render_text($attributes["title"], $attributes, "fs-36 fw-bold text-white"); ?>
-                        <?php echo Text_Utils::render_text($attributes["subtitle"], $attributes, "fs-24 fw-bold text-white"); ?>
+                        <?php echo Heading_Utils::render_heading($attributes["heading"], $attributes, "fs-36 fw-bold text-white"); ?>
+                        <?php echo Subtitle::render_subtitle($attributes["subtitle"], $attributes, "fs-24 fw-bold text-white"); ?>
                         <?php Button_Utils::render_button($attributes); ?>
                     </div>
                 </div>
@@ -199,18 +187,18 @@ if (!isset($attributes["spacer"])) {
 
 In the WordPress editor, users can:
 1. Select and configure a background image.
-2. Adjust spacing using the spacer settings.
-3. Add or modify the title, subtitle, and button.
+2. Adjust spacing using spacer settings.
+3. Add or modify the heading, subtitle, and button.
 
 ### Frontend
 
 The block renders as a visually appealing teaser section with:
 - A full-width background image.
-- Text overlay (title and subtitle).
+- Heading and subtitle overlay.
 - A call-to-action button.
 
 ---
 
 ## Conclusion
 
-The **Big-Teaser Component** combines multiple utilities into a single, cohesive block that is highly customizable and ensures consistent rendering across the editor and frontend.
+The **Big-Teaser Component** merges essential utilities—image, heading, subtitle, button, and spacing—into one cohesive and reusable block.
