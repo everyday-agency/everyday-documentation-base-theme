@@ -1,22 +1,23 @@
 ---
 title: Swiper Configuration
-description: This documentation provides an overview of the **Swiper Component**, **Swiper Settings**, and **Swiper Utilities**, which manage swiper slider configurations for WordPress blocks and themes.
+description: This documentation provides an overview of the **Swiper Component**, **Swiper Settings**, and **Swiper Utilities**, which manage Swiper slider configurations for WordPress blocks and themes.
 sidebar:
   badge:
-    text: Caution
-    variant: caution
+    text: updated
+    variant: note
 # variant?: 'note' | 'tip' | 'caution' | 'danger' | 'success' | 'default';
-
 ---
 
 import { Code } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-<Aside type="caution">The Swiper Render Component needs to be updated to use the new import syntax. Currently, each Swiper Render Component must be implemented separately.</Aside>
+<Aside type="note">
+  The Swiper render logic has been updated. All Swiper render components should now use the `render_swiper_settings()` utility function for consistent data attribute output.
+</Aside>
 
 ## Swiper Component
 
-The **Swiper Component** allows users to customize swiper sliders in WordPress blocks with settings for autoplay, navigation, pagination, and more.
+The **Swiper Component** allows users to create customizable Swiper sliders in WordPress blocks with options for autoplay, navigation, pagination, and more.
 
 ---
 
@@ -32,34 +33,33 @@ import {
 
 import { useEffect } from '@wordpress/element';
 import { v4 as uuidv4 } from 'uuid';
-
 ```
 
 ```javascript
-    attributes: {
-        uuid: {
-            type: 'string',
-            default: '',
-        },
-        ...defaultSwiperAttributes,
-        // Other attributes...
+attributes: {
+    uuid: {
+        type: 'string',
+        default: '',
     },
+    ...defaultSwiperAttributes,
+    // Other attributes...
+},
 ```
 
 ```javascript
-    useEffect(() => {
-        if (!attributes.uuid) {
-            setAttributes({ uuid: uuidv4() });
-        }
-    }, []);
+useEffect(() => {
+    if (!attributes.uuid) {
+        setAttributes({ uuid: uuidv4() });
+    }
+}, []);
 ```
 
 ```javascript
-    <SwiperSettings
-        title="Hero Slider Settings"
-        attributes={attributes}
-        setAttributes={setAttributes}
-    />
+<SwiperSettings
+    title="Hero Slider Settings"
+    attributes={attributes}
+    setAttributes={setAttributes}
+/>
 ```
 
 ### PHP Import
@@ -71,15 +71,16 @@ Swiper_Utils::init_swiper($attributes);
 ```
 
 ```php
-<?php Swiper_Utils::render_swiper_settings($attributes); ?>
+<section data-swiper <?php echo Swiper_Utils::render_swiper_settings($attributes); ?>>
+    ...
+</section>
 ```
-
 
 ---
 
 ### Default Attributes
 
-The `defaultSwiperAttributes` object defines the default attributes for the swiper component.
+The `defaultSwiperAttributes` object defines the default attributes used by the Swiper component in the editor.
 
 ```javascript
 export const defaultSwiperAttributes = {
@@ -99,7 +100,7 @@ export const defaultSwiperAttributes = {
 
 ### SwiperSettings Component
 
-The `SwiperSettings` component provides a user interface for configuring swiper slider attributes.
+The `SwiperSettings` component provides a UI in the editor sidebar for configuring Swiper slider settings.
 
 ```javascript
 export function SwiperSettings({ title, attributes, setAttributes }) {
@@ -108,7 +109,6 @@ export function SwiperSettings({ title, attributes, setAttributes }) {
             <PanelRow>
                 <ToggleControl
                     label="Loop"
-                    value={attributes.loop}
                     checked={attributes.loop}
                     onChange={(loop) => setAttributes({ loop })}
                 />
@@ -116,7 +116,6 @@ export function SwiperSettings({ title, attributes, setAttributes }) {
             <PanelRow>
                 <ToggleControl
                     label="Infinity Loop"
-                    value={attributes.infiniteLoop}
                     checked={attributes.infiniteLoop}
                     onChange={(infiniteLoop) => setAttributes({ infiniteLoop })}
                 />
@@ -124,7 +123,6 @@ export function SwiperSettings({ title, attributes, setAttributes }) {
             <PanelRow>
                 <ToggleControl
                     label="Autoplay"
-                    value={attributes.autoplay}
                     checked={attributes.autoplay}
                     onChange={(autoplay) => setAttributes({ autoplay })}
                 />
@@ -143,7 +141,6 @@ export function SwiperSettings({ title, attributes, setAttributes }) {
             <PanelRow>
                 <ToggleControl
                     label="Pagination"
-                    value={attributes.pagination}
                     checked={attributes.pagination}
                     onChange={(pagination) => setAttributes({ pagination })}
                 />
@@ -151,7 +148,6 @@ export function SwiperSettings({ title, attributes, setAttributes }) {
             <PanelRow>
                 <ToggleControl
                     label="Navigation"
-                    value={attributes.navigation}
                     checked={attributes.navigation}
                     onChange={(navigation) => setAttributes({ navigation })}
                 />
@@ -198,8 +194,7 @@ export function SwiperSettings({ title, attributes, setAttributes }) {
 
 ## Swiper Utilities
 
-
-The **Swiper_Utils** class standardizes swiper slider settings for WordPress themes, ensuring consistent configurations.
+The **Swiper_Utils** class standardizes Swiper slider settings for WordPress themes, ensuring consistent configurations between JavaScript and PHP.
 
 ---
 
@@ -212,48 +207,59 @@ class Swiper_Utils
 {
     public static function init_swiper(&$attributes)
     {
-        if (! isset($attributes['loop'])) {
-            $attributes["loop"] = "true";
+        if (!isset($attributes['loop'])) {
+            $attributes['loop'] = 'true';
         }
-
         if (!isset($attributes['autoplay'])) {
-            $attributes["autoplay"] = "true";
+            $attributes['autoplay'] = 'true';
         }
-
         if (!isset($attributes['autoplaySpeed'])) {
-            $attributes["autoplaySpeed"] = 3000;
+            $attributes['autoplaySpeed'] = 3000;
         }
-
         if (!isset($attributes['pagination'])) {
-            $attributes["pagination"] = "true";
+            $attributes['pagination'] = 'true';
         }
-
         if (!isset($attributes['navigation'])) {
-            $attributes["navigation"] = "true";
+            $attributes['navigation'] = 'true';
         }
-
         if (!isset($attributes['effect'])) {
-            $attributes["effect"] = "slide";
+            $attributes['effect'] = 'slide';
         }
-
         if (!isset($attributes['spaceBetween'])) {
-            $attributes["spaceBetween"] = 0;
+            $attributes['spaceBetween'] = 0;
         }
-
         if (!isset($attributes['slidesPerView'])) {
-            $attributes["slidesPerView"] = 1;
+            $attributes['slidesPerView'] = 1;
         }
-
         if (!isset($attributes['infiniteLoop'])) {
-            $attributes["infiniteLoop"] = "false";
+            $attributes['infiniteLoop'] = 'false';
         }
-
-        if ($attributes["infiniteLoop"] != "false") {
-            $attributes["infiniteLoop"] = "true";
+        if ($attributes['infiniteLoop'] !== 'false') {
+            $attributes['infiniteLoop'] = 'true';
         }
     }
 
-    public function render_swiper_settings($attributes) {}
+    public static function render_swiper_settings(array $attributes): string
+    {
+        $settings = [
+            'swiper-id' => $attributes['uuid'],
+            'swiper-loop' => $attributes['loop'],
+            'swiper-set-autoplay' => $attributes['autoplay'],
+            'swiper-autoplay' => $attributes['autoplaySpeed'],
+            'swiper-pagination' => $attributes['pagination'],
+            'swiper-navigation' => $attributes['navigation'],
+            'swiper-effect' => $attributes['effect'],
+            'swiper-space-between' => $attributes['spaceBetween'],
+            'swiper-slides-per-view' => $attributes['slidesPerView'],
+            'swiper-infiniteloop' => $attributes['infiniteLoop'],
+        ];
+
+        return implode(' ', array_map(
+            fn ($key, $value) => sprintf('data-%s="%s"', $key, $value),
+            array_keys($settings),
+            $settings
+        ));
+    }
 }
 ```
 
@@ -263,7 +269,7 @@ class Swiper_Utils
 
 ### JavaScript
 
-Include the `SwiperSettings` component for managing swiper attributes in the editor:
+Use the `SwiperSettings` component in your block editor:
 
 ```javascript
 <SwiperSettings
@@ -275,7 +281,7 @@ Include the `SwiperSettings` component for managing swiper attributes in the edi
 
 ### PHP
 
-Use the `Swiper_Utils` class to initialize and manage swiper settings in the backend:
+Use the utility in your PHP template:
 
 ```php
 use basetheme\Utilities\Swiper_Utils;
@@ -288,8 +294,14 @@ $attributes = [
 Swiper_Utils::init_swiper($attributes);
 ```
 
+```php
+<section data-swiper <?php echo Swiper_Utils::render_swiper_settings($attributes); ?>>
+    <!-- Swiper content -->
+</section>
+```
+
 ---
 
 ## Conclusion
 
-The **Swiper Component** and **Swiper Utilities** provide a unified solution for managing swiper sliders in WordPress blocks and themes, ensuring flexibility and ease of use.
+The **Swiper Component** and **Swiper Utilities** provide a flexible and consistent solution for managing Swiper sliders in both the WordPress editor and frontend themes.

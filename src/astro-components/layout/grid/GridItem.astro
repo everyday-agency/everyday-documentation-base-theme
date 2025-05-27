@@ -1,11 +1,12 @@
 ---
-
+const col = Astro.props.col || 6;
+const colClass = `col-${col}`;
 ---
 
-<div class="col-6">
+<div class={colClass}>
     <div
         class="grid-item grid-border light-dark-background d-flex justify-content-center align-items-center"
     >
-        <div class="fw-bold fs-32">Grid Item</div>
+        <div class="fw-bold fs-18 px-2">Grid Item {colClass}</div>
     </div>
 </div>
