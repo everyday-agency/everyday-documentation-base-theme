@@ -1,0 +1,147 @@
+---
+title: Image
+description: This documentation provides an overview of the Image Component, which supports media selection and size configuration for use in WordPress blocks.
+sidebar:
+  badge:
+    text: New
+    variant: note
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Image from "@components/utilities/image/Image.astro";
+
+<Image src="/assets/example.jpg" alt="Example Image" />
+
+---
+
+The **Image Component** allows for:
+- Selecting an image from the media library
+- Choosing predefined image sizes
+- Rendering with appropriate utility classes
+
+---
+
+## JavaScript Implementation
+
+### Block Registration
+
+```javascript
+import { registerBlockType } from '@wordpress/blocks';
+import { InnerBlocks, InspectorControls } from '@wordpress/block-editor';
+import {
+    Image,
+    ImageSettings,
+    getDefaultImageAttributes,
+} from '../../utilities/image/image';
+import { image } from '@wordpress/icons';
+
+const imageSizeOptions = [
+    { value: 'pageBanner', label: 'Banner' },
+    { value: 'full', label: 'Full' },
+    { value: 'medium', label: 'Medium' },
+];
+
+registerBlockType('basetheme/image', {
+    title: 'Image',
+    icon: image,
+    supports: {},
+    parent: ['basetheme/grid-item', 'basetheme/container'],
+    attributes: {
+        ...getDefaultImageAttributes,
+    },
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+---
+
+### Edit Component
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    return (
+        <>
+            <InspectorControls>
+                <ImageSettings
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                    imageSizeOptions={imageSizeOptions}
+                />
+            </InspectorControls>
+
+            <Image mediaUrl={attributes.mediaUrl} />
+        </>
+    );
+}
+```
+
+---
+
+### Save Component
+
+```javascript
+function SaveComponent() {
+    return <InnerBlocks.Content />;
+}
+```
+
+---
+
+## PHP Implementation
+
+### Initialization and Rendering
+
+```php
+<?php
+
+use basetheme\Utilities\Image_Utils;
+
+Image_Utils::init_image($attributes);
+
+?>
+
+<?php Image_Utils::render_image($attributes, "bs-image img-fluid w-100 h-100 object-fit-cover"); ?>
+```
+
+---
+
+## Attributes
+
+The `getDefaultImageAttributes` utility defines attributes used by the block.
+
+| Attribute    | Type     | Default | Description                    |
+|--------------|----------|---------|--------------------------------|
+| `mediaId`    | `number` | `0`     | The ID of the selected image   |
+| `mediaUrl`   | `string` | `''`    | The URL of the image           |
+| `mediaAlt`   | `string` | `''`    | Alternative text for the image |
+| `mediaTitle` | `string` | `''`    | Title of the image             |
+| `imageSize`  | `string` | `''`    | Selected image size variant    |
+
+---
+
+## Example Usage
+
+### Block Editor
+
+1. Select an image from the media library.
+2. Optionally configure the image size using the sidebar control.
+
+### Frontend Output
+
+```html
+<img
+    class="bs-image img-fluid w-100 h-100 object-fit-cover"
+    src="example.jpg"
+    alt="Example Image"
+/>
+```
+
+---
+
+## Conclusion
+
+The **Image Component** simplifies image selection and rendering in WordPress blocks. It ensures consistent sizing and responsive behavior through utility classes and dynamic PHP rendering.
