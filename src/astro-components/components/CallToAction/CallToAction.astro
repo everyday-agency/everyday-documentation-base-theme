@@ -1,0 +1,22 @@
+---
+import BootstrapProvider from '@components/Provider/BootstrapProvider.astro';
+import Button from '@components/utilities/button/Button.astro';
+// Astro.props should contain title and subtitle for the CallToAction component
+const { title, content } = Astro.props;
+---
+
+<BootstrapProvider>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div
+                    class="light-dark-background shadow border border-primary p-4 d-flex flex-column justify-content-center align-items-center"
+                >
+                    <h2 class="fs-32">{title}</h2>
+                    <p>{content}</p>
+                    <Button title="Read More" color="primary" />
+                </div>
+            </div>
+        </div>
+    </div>
+</BootstrapProvider>
