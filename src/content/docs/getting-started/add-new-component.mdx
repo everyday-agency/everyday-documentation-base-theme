@@ -19,8 +19,6 @@ import JobList from '@components/components/JobList/JobList.astro';
     component.
 </Aside>
 
-TODO: How to add a new Component
-
 ## Create new Component
 
 To create a new component we go into the folder `blocks/components` and add there a new folder for example `job-list`.
@@ -184,13 +182,13 @@ function allowed_blocks($allowed_block_types)
 To use the new block, we also must import the new block into `registerBlocks/block.php`.
 
 In there we add a new JSXBlock import.
-If we want to use the dynamic php render (later in this chapter), we must set the callback to true.
+If we want to use the [dynamic php render](#dynamic-php-rendering), we must set the callback to true.
 
 ```php
 new JSXBlock("basetheme/job-list", true);
 ```
 
-Now the block is registered. We must import now the new component into the allwoed block to the container or the grid item.
+Now the block is registered. We must import now the new component into the allowed block to the container or the grid item.
 Therefor we got to `blocks/layout/container/container.jsx` or `blocks/layout/grid/grid-item.jsx` and add the new component into the allowed blocks array.
 
 ```jsx
@@ -212,7 +210,7 @@ const ALLOWED_BLOCKS = [
 ];
 ```
 
-After importing the basetheme/job-list, you must start the dev or build task to compile the new block and update the existing ones.
+After importing the basetheme/job-list, you must start the `dev` or `build` task to compile the new block and update the existing ones.
 Once the build has completed, the basetheme/job-list component can be used in the Gutenberg editor.
 
 <Aside type="caution">
@@ -226,6 +224,8 @@ We see now following component in the backend and frontend.
 <AddNewComponent />
 
 ## Build the Component
+
+> This is our example Component
 
 <JobList />
 
@@ -244,7 +244,7 @@ You can have a look at the heading component [here](/utilities/heading/).
 
 ### Import Heading Component
 
-First we must [import](/utilities/heading/#javascript-import) the Heading component
+First we must import the [Heading component](utilities/heading/#javascript-import).
 
 ```jsx
 import {
@@ -416,7 +416,7 @@ function SaveComponent() {
 
 ### Import Text Component
 
-For our Description we want to [import](/utilities/text/) our Text Component.
+For our Description we want to import our [Text Component](/utilities/text/).
 
 ```jsx
 import { Text, defaultTextAttributes } from '../../utilities/text/text';
@@ -519,7 +519,7 @@ function SaveComponent() {
 
 ### Import Button Component
 
-Now we want to [import](/utilities/button/) our Button Component.
+Now we want to import our [Button Component](/utilities/button/).
 
 ```jsx
 import { Button, defaultButtonAttributes } from '../../utilities/button/button';
@@ -628,15 +628,18 @@ We will continue to build now the frontend rendering with dynamic PHP rendering.
 
 To enable dynamic PHP rendering, we must set the second parameter in the `JSXBlock` import to `true`. And add inside the `job-list` folder a new file called `job-list.php`
 
-To get more inside for dynamic php rendering you can [read](https://developer.wordpress.org/block-editor/getting-started/fundamentals/static-dynamic-rendering/) this documentation.
-
-And this [blogpost](https://developer.wordpress.org/news/2023/02/static-vs-dynamic-blocks-whats-the-difference/).
-
-We can use static or dynamic rendering.
-
 ```php
 new JSXBlock("job-list", true);
 ```
+
+To get more inside for dynamic php rendering you can [read](https://developer.wordpress.org/block-editor/getting-started/fundamentals/static-dynamic-rendering/) this documentation and this [blogpost](https://developer.wordpress.org/news/2023/02/static-vs-dynamic-blocks-whats-the-difference/).
+
+<Aside type="note">
+    You can use either static or dynamic rendering, depending on your
+    requirements.
+</Aside>
+
+<hr />
 
 For the frontend rendering we can remove the save function and we must return null.
 
@@ -717,8 +720,8 @@ Now we can start to build our dynamic php component.
 
 ### Import Heading Component
 
-Because we use the [Heading utility](/utilities/heading/#php-import) we also have a `Heading` component available for our PHP file.
-So we can start to build our `job-list.php` file with the heading component.
+Because we use the Heading utility we also have a `Heading` component available for our PHP file.
+So we can start to build our `job-list.php` file with the [Heading component](/utilities/heading/#php-import).
 
 ```php
 <?php
@@ -735,7 +738,7 @@ Heading_Utils::init_heading($attributes);
 
 ```
 
-Because we deactivate the Level Selection we can set a fixed h2 or h3 tag for the heading.
+We deactivate the `Level Selection` we can set a fixed `h2` or `h3` tag for the heading.
 
 ```php
 
@@ -761,3 +764,145 @@ Heading_Utils::init_heading($attributes);
 ```
 
 ### Rendering Starting Date
+
+Now we want to add our starting Date string.
+First we must check if the startingDate attribute is set. If is not set we must set a default value.
+
+```php
+
+if (!isset($attributes["startingDate"])) {
+    $attributes["startingDate"] = "Ab Sofort";
+}
+
+```
+
+And to display the starting date we can use following code.
+
+```php
+<div class="fs-14 fw-light"><?php echo esc_html($attributes["startingDate"]); ?></div>
+```
+
+Our php rendering should look like this.
+
+```php
+<?php
+
+use basetheme\Utilities\Heading_Utils;
+
+$attributes["tag"] = "h2";
+Heading_Utils::init_heading($attributes);
+
+if (!isset($attributes["startingDate"])) {
+    $attributes["startingDate"] = "Ab Sofort";
+}
+
+?>
+
+<div>
+    <?php echo Heading_Utils::render_heading($attributes["heading"], $attributes, "fs-26 fw-bold"); ?>
+    <div class="fs-14 fw-light"><?php echo esc_html($attributes["startingDate"]); ?></div>
+</div>
+```
+
+### Import Text Component
+
+For the job description, we use the utility [Text Component](/utilities/text/#php-import).
+
+```php
+use basetheme\Utilities\Text_Utils;
+if (!isset($attributes["text"])) {
+    $attributes["text"] = "";
+}
+
+<?php echo Text_Utils::render_text($attributes["text"], $attributes, "fs-16"); ?>
+
+```
+
+Our php rendering should look like this.
+
+```php
+<?php
+
+use basetheme\Utilities\Heading_Utils;
+use basetheme\Utilities\Text_Utils;
+
+$attributes["tag"] = "h2";
+Heading_Utils::init_heading($attributes);
+
+if (!isset($attributes["startingDate"])) {
+    $attributes["startingDate"] = "Ab Sofort";
+}
+
+if (!isset($attributes["text"])) {
+    $attributes["text"] = "";
+}
+
+?>
+
+<div>
+    <?php echo Heading_Utils::render_heading($attributes["heading"], $attributes, "fs-26 fw-bold"); ?>
+    <div class="fs-14 fw-light"><?php echo esc_html($attributes["startingDate"]); ?></div>
+    <?php echo Text_Utils::render_text($attributes["text"], $attributes, "fs-16"); ?>
+</div>
+```
+
+### Add Button Component
+
+Use the [Button Component](/utilities/button/#php-import) utility to handle links.
+
+```php
+<?php
+
+use basetheme\Utilities\Button_Utils;
+
+Button_Utils::init_button($attributes);
+
+?>
+
+<?php Button_Utils::render_button($attributes); ?>
+
+```
+
+Our php rendering should look like this.
+
+```php
+<?php
+
+use basetheme\Utilities\Heading_Utils;
+use basetheme\Utilities\Text_Utils;
+use basetheme\Utilities\Button_Utils;
+
+
+
+$attributes["tag"] = "h2";
+Heading_Utils::init_heading($attributes);
+
+if (!isset($attributes["startingDate"])) {
+    $attributes["startingDate"] = "Ab Sofort";
+}
+
+if (!isset($attributes["text"])) {
+    $attributes["text"] = "";
+}
+
+Button_Utils::init_button($attributes);
+
+?>
+
+<div>
+    <?php echo Heading_Utils::render_heading($attributes["heading"], $attributes, "fs-26 fw-bold"); ?>
+    <div class="fs-14 fw-light"><?php echo esc_html($attributes["startingDate"]); ?></div>
+    <?php echo Text_Utils::render_text($attributes["text"], $attributes, "fs-16"); ?>
+
+    <?php Button_Utils::render_button($attributes); ?>
+</div>
+```
+
+Now we finished with our first component.
+
+If you want to know how to render a child element inside a Component. Please visit following components
+
+-   [Container](/layout/container/)
+-   [Grid](/layout/grid/)
+-   [Accordion](/components/accordion/)
+-   [Hero Slider](/components/hero-slider/)
