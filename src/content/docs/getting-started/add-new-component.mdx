@@ -210,9 +210,15 @@ const ALLOWED_BLOCKS = [
 ];
 ```
 
-After we import the `basetheme/job-list` we must starte our dev oder build task to build the new block and update the other blocks.
-Now we can use the `basetheme/job-list` component in our Gutenberg editor.
+After importing the basetheme/job-list, you must start the dev or build task to compile the new block and update the existing ones.
+Once the build has completed, the basetheme/job-list component can be used in the Gutenberg editor.
 
-TODO: In which files must I import or add the component?
+<Aside type="caution">
+    If the `dynamic` attribute is set to `false`, the component will currently
+    render in the frontend. However, our goal is to add dynamic import via PHP,
+    so we will build the component properly in the next steps.
+</Aside>
+
+TODO: Build the component with the information that we needed. And import some utilites to the component.
 
 TODO: Dynamic PHP Import
