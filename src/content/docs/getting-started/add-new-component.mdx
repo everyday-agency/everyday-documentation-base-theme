@@ -12,6 +12,7 @@ sidebar:
 import { Code } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 import AddNewComponent from '@components/getting-started/AddNewComponent.astro';
+import JobList from '@components/components/JobList/JobList.astro';
 
 <Aside type="note">
     The job-list component is provided as an example of how to create a new
@@ -223,6 +224,227 @@ Once the build has completed, the basetheme/job-list component can be used in th
 We see now following component in the backend and frontend.
 
 <AddNewComponent />
+
+## Build the Component
+
+<JobList />
+
+<hr />
+
+The Joblist Component should have following structure.
+
+-   Title
+-   Date
+-   Description
+-   Link to the Job
+
+So we will start with the title.
+For the Title we will import from the utilties the heading component.
+You can have a look at the heading component [here](/utilities/heading/).
+
+### Import Heading Component
+
+First we must [import](/utilities/heading/#javascript-import) the Heading component
+
+```jsx
+import {
+    Heading,
+    defaultHeadingAttributes,
+} from '../../utilities/heading/heading';
+```
+
+Inside the `registerBlockType` we add the default attributes.
+
+```jsx
+attributes: { ...defaultHeadingAttributes },
+```
+
+Inside our `EditComponent` function we add now the heading component.
+
+```jsx
+<Heading
+    attributes={attributes}
+    setAttributes={setAttributes}
+    enableAlignment={false}
+    enableLevelSelection={false}
+    className="fs-26 fw-bold"
+/>
+```
+
+Now our component should look like this.
+
+```jsx
+import { registerBlockType } from '@wordpress/blocks';
+import { postAuthor } from '@wordpress/icons';
+
+import {
+    Heading,
+    defaultHeadingAttributes,
+} from '../../utilities/heading/heading';
+
+registerBlockType('basetheme/job-list', {
+    title: 'Job List',
+    icon: postAuthor,
+    category: 'components',
+    description: 'Job List Block to display open jobs',
+    keywords: '[]',
+    supports: {},
+    attributes: { ...defaultHeadingAttributes },
+
+    edit: EditComponent,
+    save: SaveComponent,
+});
+
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    return (
+        <div>
+            <Heading
+                attributes={attributes}
+                setAttributes={setAttributes}
+                enableAlignment={false}
+                enableLevelSelection={false}
+                className="fs-26 fw-bold"
+            />
+        </div>
+    );
+}
+
+function SaveComponent() {
+    return (
+        <div>
+            <h1>Hello World</h1>
+        </div>
+    );
+}
+```
+
+### Add starting Date.
+
+For the Date we want to use not the core date picker. We want a string to add `ab sofort` or a specific date.
+
+For this we want to add the core RichText to the component.
+
+```jsx
+import { RichText } from '@wordpress/block-editor';
+```
+
+In the attributes we will add a new attribute called `startingDate`.
+
+```jsx
+attributes: {
+    ...defaultHeadingAttributes,
+    startingDate: {
+        type: 'string',
+        default: 'Ab Sofort',
+    },
+},
+```
+
+And in our `EditComponent` function we will add the `RichText` component.
+
+```jsx
+<RichText
+    tagName="div"
+    className="fs-14 fw-light"
+    value={attributes.startingDate}
+    onChange={(value) => setAttributes({ startingDate: value })}
+/>
+```
+
+Now our component should look like this.
+
+```jsx
+import { registerBlockType } from '@wordpress/blocks';
+import { postAuthor } from '@wordpress/icons';
+
+import { RichText } from '@wordpress/block-editor';
+
+import {
+    Heading,
+    defaultHeadingAttributes,
+} from '../../utilities/heading/heading';
+
+registerBlockType('basetheme/job-list', {
+    title: 'Job List',
+    icon: postAuthor,
+    category: 'components',
+    description: 'Job List Block to display open jobs',
+    keywords: '[]',
+    supports: {},
+    attributes: {
+        ...defaultHeadingAttributes,
+        startingDate: {
+            type: 'string',
+            default: 'Ab Sofort',
+        },
+    },
+
+    edit: EditComponent,
+    save: SaveComponent,
+});
+
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    return (
+        <div>
+            <Heading
+                attributes={attributes}
+                setAttributes={setAttributes}
+                enableAlignment={false}
+                enableLevelSelection={false}
+                className="fs-26 fw-bold"
+            />
+            <RichText
+                tagName="div"
+                className="fs-14 fw-light"
+                value={attributes.startingDate}
+                onChange={(value) => setAttributes({ startingDate: value })}
+            />
+        </div>
+    );
+}
+
+function SaveComponent() {
+    return (
+        <div>
+            <h1>Hello World</h1>
+        </div>
+    );
+}
+```
+
+### Import Text Component
+
+For our Description we want to [import](/utilities/text/) our Text Component.
+
+```jsx
+import { Text, defaultTextAttributes } from '../../utilities/text/text';
+```
+
+Add the defaultTextAttributes to attributes.
+
+```jsx
+attributes: {
+    ...defaultHeadingAttributes,
+    startingDate: {
+        type: 'string',
+        default: 'Ab Sofort',
+    },
+    ...defaultTextAttributes,
+},
+```
+
+In the `EditComponent` we add now the Text Component.
+
+```jsx
+<Text
+    attributes={attributes}
+    setAttributes={setAttributes}
+    enableAlignment={true}
+    className="fs-16"
+/>
+```
 
 TODO: Build the component with the information that we needed. And import some utilites to the component.
 
