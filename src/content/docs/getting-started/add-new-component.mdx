@@ -10,9 +10,209 @@ sidebar:
 ---
 
 import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="note">
+    The job-list component is provided as an example of how to create a new
+    component.
+</Aside>
 
 TODO: How to add a new Component
 
-TODO: In which Files must i Import or add the component?
+## Create new Component
+
+To create a new component we go into the folder `blocks/components` and add there a new folder for example `job-list`.
+
+Inside the folder we add following file `job-list.jsx`.
+Now we have a new empty react component.
+
+For a faster development. We generate via Visual Studio Code vscode snippets
+
+```json
+"React Component WordPress Block": {
+    "scope": "javascript,typescript,javascriptreact,typescriptreact",
+    "prefix": "rcblock",
+    "body": [
+        "import { registerBlockType } from '@wordpress/blocks';",
+        "import { layout } from '@wordpress/icons';",
+        "registerBlockType('basetheme/${TM_FILENAME_BASE}', {",
+        "    title: '${TM_FILENAME_BASE/(.*)/${1:/capitalize}/}',",
+        "    icon: layout,",
+        "    category: 'layout',",
+        "    description: 'A Description',",
+        "    keywords: '[]',",
+        "    supports: {},",
+        "    attributes: {},",
+        "",
+        "    edit: EditComponent,",
+        "    save: SaveComponent,",
+        "});",
+        "",
+        "function EditComponent(props) {",
+        "    const { attributes, setAttributes } = props;",
+        "    return (",
+        "        <div>",
+        "            <h1>Hello World</h1>",
+        "        </div>",
+        "    );",
+        "}",
+        "",
+        "function SaveComponent() {",
+        "    return (",
+        "        <div>",
+        "            <h1>Hello World</h1>",
+        "        </div>",
+        "    );",
+        "}",
+        ""
+    ],
+    "description": "Register a WordPress block using the filename as the component name"
+},
+```
+
+<br />
+<br />
+With typing the prefix `rcblock` we generate the whole boilerplate code for a
+new WordPress block. It's automatically add the component name based on the
+filename. We must changed then the icon and the category.
+
+Below is now the example of the new component.
+
+```jsx
+import { registerBlockType } from '@wordpress/blocks';
+import { layout } from '@wordpress/icons';
+registerBlockType('basetheme/job-list', {
+    title: 'Job-list',
+    icon: layout,
+    category: 'layout',
+    description: 'A Description',
+    keywords: '[]',
+    supports: {},
+    attributes: {},
+
+    edit: EditComponent,
+    save: SaveComponent,
+});
+
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    return (
+        <div>
+            <h1>Hello World</h1>
+        </div>
+    );
+}
+
+function SaveComponent() {
+    return (
+        <div>
+            <h1>Hello World</h1>
+        </div>
+    );
+}
+```
+
+## Where to Import the Component
+
+After we initialise the component, we need to import it into the relevant files.
+
+In the `functions.php` file we had a filter to deactivate not used blocks.
+To activate the new block we must add it to the list of allowed blocks.
+
+Search for follwing function `allowed_blocks` and add the new component `basetheme/job-list` into the array.
+
+```php
+
+function allowed_blocks($allowed_block_types)
+{
+
+    return array(
+        'core/paragraph',
+
+        'basetheme/accordion-container',
+        'basetheme/accordion-item',
+        'basetheme/big-teaser',
+        'basetheme/blog-post',
+        'basetheme/button',
+        'basetheme/call-to-action-container',
+        'basetheme/call-to-action-item',
+        'basetheme/card',
+        'basetheme/container',
+        'basetheme/heading',
+        'basetheme/text',
+        'basetheme/button',
+        'basetheme/blog-post',
+        'basetheme/google-maps',
+        'basetheme/reference',
+        'basetheme/accordion-container',
+        'basetheme/footer-container',
+        'basetheme/footer-item',
+        'basetheme/footer-navigation',
+        'basetheme/footer-social-media-container',
+        'basetheme/footer-social-media-icon',
+        'basetheme/footer-text',
+        'basetheme/grid-container',
+        'basetheme/grid-item',
+        'basetheme/person',
+        'basetheme/hero-slider',
+        'basetheme/hero-slider-item',
+        'basetheme/image',
+        'basetheme/logo-swiper-container',
+        'basetheme/logo-swiper-item',
+        'basetheme/navigation',
+        'basetheme/image-swiper',
+        'basetheme/image-swiper-item',
+        'basetheme/test',
+        "basetheme/list",
+        "basetheme/list-item",
+        "basetheme/job-list",
+
+        'contact-form-7/contact-form-selector',
+
+    );
+}
+
+```
+
+<Aside type="tip">
+    You can also import core Gutenberg Blocks like the `core/paragraph` block or
+    the `core/html` for the embedded HTML block.
+</Aside>
+
+To use the new block, we also must import the new block into `registerBlocks/block.php`.
+
+In there we add a new JSXBlock import.
+If we want to use the dynamic php render (later in this chapter), we must set the callback to true.
+
+```php
+new JSXBlock("basetheme/job-list", true);
+```
+
+Now the block is registered. We must import now the new component into the allwoed block to the container or the grid item.
+Therefor we got to `blocks/layout/container/container.jsx` or `blocks/layout/grid/grid-item.jsx` and add the new component into the allowed blocks array.
+
+```jsx
+const ALLOWED_BLOCKS = [
+    'basetheme/heading',
+    'basetheme/text',
+    'basetheme/button',
+    'basetheme/blog-post',
+    'basetheme/google-maps',
+    'basetheme/reference',
+    'basetheme/accordion-container',
+    'basetheme/test',
+    'basetheme/list',
+
+    'basetheme/job-list',
+
+    'contact-form-7/contact-form-selector',
+    'core/html',
+];
+```
+
+After we import the `basetheme/job-list` we must starte our dev oder build task to build the new block and update the other blocks.
+Now we can use the `basetheme/job-list` component in our Gutenberg editor.
+
+TODO: In which files must I import or add the component?
 
 TODO: Dynamic PHP Import
