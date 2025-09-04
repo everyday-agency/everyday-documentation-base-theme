@@ -10,5 +10,299 @@ sidebar:
 
 import { Code } from '@astrojs/starlight/components';
 
-TODO: Add WordPress Controls documentation here.
-For example, you can document how to use custom controls in the WordPress block editor, including examples of different control types such as text inputs, dropdowns, color pickers, and more.
+WordPress add various controls to use inside the block editor. We use some of them in our Blocks.
+
+## InspectorControls
+
+```jsx
+import { InspectorControls } from '@wordpress/block-editor';
+```
+
+```jsx
+<InspectorControls>{/* Your controls go here */}</InspectorControls>
+```
+
+## PanelBody
+
+```jsx
+import { PanelBody } from '@wordpress/components';
+```
+
+```jsx
+<InspectorControls>
+    <PanelBody title="Slider Settings" initialOpen={true}>
+        {/* Your controls go here */}
+    </PanelBody>
+</InspectorControls>
+```
+
+## PanelRow
+
+```jsx
+import { PanelRow } from '@wordpress/components';
+```
+
+```jsx
+<InspectorControls>
+    <PanelBody title="Slider Settings" initialOpen={true}>
+        <PanelRow>{/* Your controls go here */}</PanelRow>
+    </PanelBody>
+</InspectorControls>
+```
+
+## ToggleControl
+
+```jsx
+import { ToggleControl } from '@wordpress/components';
+```
+
+```jsx
+<ToggleControl
+    label="Show Title"
+    checked={attributes.showTitle}
+    onChange={(value) => setAttributes({ showTitle: value })}
+/>
+```
+
+## SelectControl
+
+```jsx
+import { SelectControl } from '@wordpress/components';
+```
+
+```jsx
+<SelectControl
+    label="Effect"
+    value={attributes.effect}
+    options={[
+        { value: 'slide', label: 'Slide' },
+        { value: 'fade', label: 'Fade' },
+    ]}
+    onChange={(effect) => setAttributes({ effect })}
+/>
+```
+
+## RangeControl
+
+```jsx
+import { RangeControl } from '@wordpress/components';
+```
+
+```jsx
+<RangeControl
+    label="Columns"
+    value={attributes.columns}
+    onChange={(columns) => setAttributes({ columns })}
+    min={1}
+    max={6}
+/>
+```
+
+## TextControl
+
+```jsx
+import { TextControl } from '@wordpress/components';
+```
+
+```jsx
+<TextControl
+    label="Autoplay Speed"
+    value={attributes.autoplaySpeed}
+    onChange={(autoplaySpeed) =>
+        setAttributes({
+            autoplaySpeed: parseInt(autoplaySpeed, 10) || 0,
+        })
+    }
+/>
+```
+
+## ColorPalette
+
+```jsx
+import { ColorPalette } from '@wordpress/block-editor';
+```
+
+```jsx
+<ColorPalette
+    colors={[
+        { name: 'red', color: '#f00' },
+        { name: 'green', color: '#0f0' },
+        { name: 'blue', color: '#00f' },
+    ]}
+    value={attributes.textColor}
+    onChange={(textColor) => setAttributes({ textColor })}
+/>
+```
+
+## Example
+
+Here is an example of a complete `InspectorControls` setup using some of the controls mentioned above:
+
+```jsx
+<InspectorControls>
+    <PanelBody title="Slider Settings" initialOpen={true}>
+        <PanelRow>
+            <ToggleControl
+                label="Show Title"
+                checked={attributes.showTitle}
+                onChange={(value) => setAttributes({ showTitle: value })}
+            />
+        </PanelRow>
+        <PanelRow>
+            <SelectControl
+                label="Effect"
+                value={attributes.effect}
+                options={[
+                    { value: 'slide', label: 'Slide' },
+                    { value: 'fade', label: 'Fade' },
+                ]}
+                onChange={(effect) => setAttributes({ effect })}
+            />
+        </PanelRow>
+        <PanelRow>
+            <RangeControl
+                label="Columns"
+                value={attributes.columns}
+                onChange={(columns) => setAttributes({ columns })}
+                min={1}
+                max={6}
+            />
+        </PanelRow>
+        <PanelRow>
+            <TextControl
+                label="Autoplay Speed"
+                value={attributes.autoplaySpeed}
+                onChange={(autoplaySpeed) =>
+                    setAttributes({
+                        autoplaySpeed: parseInt(autoplaySpeed, 10) || 0,
+                    })
+                }
+            />
+        </PanelRow>
+        <PanelRow>
+            <ColorPalette
+                colors={[
+                    { name: 'red', color: '#f00' },
+                    { name: 'green', color: '#0f0' },
+                    { name: 'blue', color: '#00f' },
+                ]}
+                value={attributes.textColor}
+                onChange={(textColor) => setAttributes({ textColor })}
+            />
+        </PanelRow>
+    </PanelBody>
+</InspectorControls>
+```
+
+Now a full Component could look like this:
+
+```jsx
+import { __ } from '@wordpress/i18n';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import {
+    PanelBody,
+    PanelRow,
+    ToggleControl,
+    SelectControl,
+    RangeControl,
+    TextControl,
+} from '@wordpress/components';
+import { ColorPalette } from '@wordpress/block-editor';
+
+registerBlockType('basetheme/example', {
+    title: 'Example',
+    icon: 'smiley',
+    category: 'widgets',
+    attributes: {
+        showTitle: { type: 'boolean', default: true },
+        effect: { type: 'string', default: 'slide' },
+        columns: { type: 'number', default: 3 },
+        autoplaySpeed: { type: 'number', default: 3000 },
+        textColor: { type: 'string', default: '#000000' },
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    return (
+        <>
+            <InspectorControls>
+                <PanelBody title="Slider Settings" initialOpen={true}>
+                    <PanelRow>
+                        <ToggleControl
+                            label="Show Title"
+                            checked={attributes.showTitle}
+                            onChange={(value) =>
+                                setAttributes({ showTitle: value })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <SelectControl
+                            label="Effect"
+                            value={attributes.effect}
+                            options={[
+                                { value: 'slide', label: 'Slide' },
+                                { value: 'fade', label: 'Fade' },
+                            ]}
+                            onChange={(effect) => setAttributes({ effect })}
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <RangeControl
+                            label="Columns"
+                            value={attributes.columns}
+                            onChange={(columns) => setAttributes({ columns })}
+                            min={1}
+                            max={6}
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <TextControl
+                            label="Autoplay Speed"
+                            value={attributes.autoplaySpeed}
+                            onChange={(autoplaySpeed) =>
+                                setAttributes({
+                                    autoplaySpeed:
+                                        parseInt(autoplaySpeed, 10) || 0,
+                                })
+                            }
+                        />
+                    </PanelRow>
+                    <PanelRow>
+                        <ColorPalette
+                            colors={[
+                                { name: 'red', color: '#f00' },
+                                { name: 'green', color: '#0f0' },
+                                { name: 'blue', color: '#00f' },
+                            ]}
+                            value={attributes.textColor}
+                            onChange={(textColor) =>
+                                setAttributes({ textColor })
+                            }
+                        />
+                    </PanelRow>
+                </PanelBody>
+            </InspectorControls>
+            <div {...useBlockProps()}>
+                {attributes.showTitle && (
+                    <h2 style={{ color: attributes.textColor }}>
+                        Example Block
+                    </h2>
+                )}
+                <p>Effect: {attributes.effect}</p>
+                <p>Columns: {attributes.columns}</p>
+                <p>Autoplay Speed: {attributes.autoplaySpeed} ms</p>
+            </div>
+        </>
+    );
+}
+```
+
+<Aside type="caution">
+    To work with the InspectorControls and Components we must wrapped all inside
+    a React Fragment `<> ... </>`.
+</Aside>
