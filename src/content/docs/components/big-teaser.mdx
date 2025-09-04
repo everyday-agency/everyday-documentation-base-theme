@@ -1,29 +1,29 @@
 ---
 title: Big Teaser
 description: This documentation provides an overview of the Big-Teaser Component, which combines image, heading, subtitle, and button utilities to create a feature-rich teaser block in WordPress.
-sidebar:
-  badge:
-    text: Updated
-    variant: note
 ---
 
 import { Code } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-<Aside type="note">The Big Teaser now includes utilities for standardized Heading and Subtitle components.</Aside>
+<Aside type="note">
+    The Big Teaser now includes utilities for standardized Heading and Subtitle
+    components.
+</Aside>
 
-import BigTeaser from "@components/components/BigTeaser/BigTeaser.astro";
+import BigTeaser from '@components/components/BigTeaser/BigTeaser.astro';
 
 <BigTeaser />
 
 ---
 
 The **Big-Teaser Component** is a customizable block that integrates:
-- **Image Component**: For displaying a background image.
-- **Heading Component**: For displaying the main title.
-- **Subtitle Component**: For displaying a supporting subtitle.
-- **Button Component**: For adding a call-to-action button.
-- **Spacer Settings**: For adjusting container spacing.
+
+-   **Image Component**: For displaying a background image.
+-   **Heading Component**: For displaying the main title.
+-   **Subtitle Component**: For displaying a supporting subtitle.
+-   **Button Component**: For adding a call-to-action button.
+-   **Spacer Settings**: For adjusting container spacing.
 
 It supports both the WordPress block editor (Gutenberg) and frontend rendering.
 
@@ -54,15 +54,15 @@ registerBlockType('basetheme/big-teaser', {
 
 ### Attributes
 
-| Attribute         | Type      | Default Value        | Description                           |
-|-------------------|-----------|----------------------|---------------------------------------|
-| `mediaUrl`        | `string`  | Placeholder image URL| The URL of the image.                |
-| `spacer`          | `string`  | `''`                | Spacer class for container spacing.  |
-| `heading`         | `string`  | `'Title'`           | The main heading.                    |
-| `subtitle`        | `string`  | `'Subtitle'`        | The subtitle text.                   |
-| `linkText`        | `string`  | `'Mehr erfahren'`    | Button text.                         |
-| `linkObject`      | `object`  | `{ url: '' }`       | Button link properties.              |
-| `buttonColorName` | `string`  | `'primary'`         | Button color.                        |
+| Attribute         | Type     | Default Value         | Description                         |
+| ----------------- | -------- | --------------------- | ----------------------------------- |
+| `mediaUrl`        | `string` | Placeholder image URL | The URL of the image.               |
+| `spacer`          | `string` | `''`                  | Spacer class for container spacing. |
+| `heading`         | `string` | `'Title'`             | The main heading.                   |
+| `subtitle`        | `string` | `'Subtitle'`          | The subtitle text.                  |
+| `linkText`        | `string` | `'Mehr erfahren'`     | Button text.                        |
+| `linkObject`      | `object` | `{ url: '' }`         | Button link properties.             |
+| `buttonColorName` | `string` | `'primary'`           | Button color.                       |
 
 ---
 
@@ -186,6 +186,7 @@ if (!isset($attributes["spacer"])) {
 ### Block Editor
 
 In the WordPress editor, users can:
+
 1. Select and configure a background image.
 2. Adjust spacing using spacer settings.
 3. Add or modify the heading, subtitle, and button.
@@ -193,9 +194,10 @@ In the WordPress editor, users can:
 ### Frontend
 
 The block renders as a visually appealing teaser section with:
-- A full-width background image.
-- Heading and subtitle overlay.
-- A call-to-action button.
+
+-   A full-width background image.
+-   Heading and subtitle overlay.
+-   A call-to-action button.
 
 ---
 

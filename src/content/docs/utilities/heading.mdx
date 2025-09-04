@@ -1,15 +1,11 @@
 ---
 title: Heading
 description: This documentation provides an overview of the Heading component, which supports heading levels, alignment, and text content for custom WordPress blocks.
-sidebar:
-  badge:
-    text: New
-    variant: note
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-import Heading from "@components/utilities/heading/Heading.astro";
+import Heading from '@components/utilities/heading/Heading.astro';
 
 <Heading level="1" heading="This is a heading 1" />
 <Heading level="2" heading="This is a heading 2" />
@@ -31,7 +27,10 @@ The **Heading** component provides a flexible interface for defining heading con
 ### JavaScript Import
 
 ```javascript
-import { Heading, defaultHeadingAttributes } from '../../utilities/heading/heading';
+import {
+    Heading,
+    defaultHeadingAttributes,
+} from '../../utilities/heading/heading';
 ```
 
 ```javascript
@@ -82,9 +81,9 @@ export const defaultHeadingAttributes = {
 };
 ```
 
-- **`tag`**: Defines the heading level (`h1`–`h6`).
-- **`heading`**: The text content of the heading.
-- **`alignment`**: Text alignment (`'left'`, `'center'`, `'right'`).
+-   **`tag`**: Defines the heading level (`h1`–`h6`).
+-   **`heading`**: The text content of the heading.
+-   **`alignment`**: Text alignment (`'left'`, `'center'`, `'right'`).
 
 ---
 
@@ -100,11 +99,12 @@ export function Heading({
 }) {
     const { tag = 'h1', heading, alignment } = attributes;
 
-    const alignmentClass = alignment === 'center'
-        ? 'text-center'
-        : alignment === 'right'
-        ? 'text-right'
-        : 'text-left';
+    const alignmentClass =
+        alignment === 'center'
+            ? 'text-center'
+            : alignment === 'right'
+              ? 'text-right'
+              : 'text-left';
 
     const combinedClassName = `${alignmentClass} ${className}`.trim();
 
@@ -116,12 +116,15 @@ export function Heading({
                         <ToolbarDropdownMenu
                             icon={headingIcons[tag]}
                             label="Wählen Sie eine Überschriftsebene"
-                            controls={['h1','h2','h3','h4','h5','h6'].map(level => ({
-                                title: level.toUpperCase(),
-                                icon: headingIcons[level],
-                                onClick: () => setAttributes({ tag: level }),
-                                isActive: tag === level,
-                            }))}
+                            controls={['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].map(
+                                (level) => ({
+                                    title: level.toUpperCase(),
+                                    icon: headingIcons[level],
+                                    onClick: () =>
+                                        setAttributes({ tag: level }),
+                                    isActive: tag === level,
+                                })
+                            )}
                         />
                     </Toolbar>
                 )}
@@ -129,7 +132,9 @@ export function Heading({
                 {enableAlignment && (
                     <AlignmentToolbar
                         value={alignment}
-                        onChange={(newAlign) => setAttributes({ alignment: newAlign })}
+                        onChange={(newAlign) =>
+                            setAttributes({ alignment: newAlign })
+                        }
                     />
                 )}
             </BlockControls>
@@ -194,12 +199,12 @@ class Heading_Utils
 
 ## Alignment Classes
 
-| Alignment | CSS Class    |
-|-----------|--------------|
-| `left`    | `text-start` |
-| `center`  | `text-center`|
-| `right`   | `text-end`   |
-| *Default* | `text-start` |
+| Alignment | CSS Class     |
+| --------- | ------------- |
+| `left`    | `text-start`  |
+| `center`  | `text-center` |
+| `right`   | `text-end`    |
+| _Default_ | `text-start`  |
 
 ---
 
@@ -238,7 +243,6 @@ Heading_Utils::init_heading($attributes);
     <?php echo Heading_Utils::render_heading($attributes["heading"], $attributes, "custom-class"); ?>
 </div>
 ```
-
 
 ---
 

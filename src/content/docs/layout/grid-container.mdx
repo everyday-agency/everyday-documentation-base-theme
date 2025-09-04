@@ -1,15 +1,11 @@
 ---
-title: "Grid"
-description: "Documentation for the Grid Container and Grid Item custom WordPress blocks."
-sidebar:
-    badge: "New"
-
+title: 'Grid'
+description: 'Documentation for the Grid Container and Grid Item custom WordPress blocks.'
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-import GridContainer from "@components/layout/grid/GridContainer.astro";
-
+import GridContainer from '@components/layout/grid/GridContainer.astro';
 
 <GridContainer />
 
@@ -23,52 +19,49 @@ The **Grid Container** and **Grid Item** blocks allow you to build responsive gr
 
 ### Block Metadata
 
-- **Title**: Grid Container
-- **Icon**: Row
-- **Category**: Layout
-- **Description**: A container block for grid items
-- **Keywords**: grid, layout, container
+-   **Title**: Grid Container
+-   **Icon**: Row
+-   **Category**: Layout
+-   **Description**: A container block for grid items
+-   **Keywords**: grid, layout, container
 
 ### Attributes
 
-| Attribute Name | Type     | Default   | Description                                 |
-|----------------|----------|-----------|---------------------------------------------|
-| `spacer`       | `string` | `medium`  | Controls vertical spacing for the block.    |
-| `colorName`    | `string` | `white`   | Background color of the container.          |
+| Attribute Name | Type     | Default  | Description                              |
+| -------------- | -------- | -------- | ---------------------------------------- |
+| `spacer`       | `string` | `medium` | Controls vertical spacing for the block. |
+| `colorName`    | `string` | `white`  | Background color of the container.       |
 
 ### Allowed Blocks
 
-- `basetheme/grid-item`
+-   `basetheme/grid-item`
 
 ### Default Template
 
 The Grid Container block provides a default template with two `grid-item` blocks:
 
 ```js
-[
-  ['basetheme/grid-item'],
-  ['basetheme/grid-item']
-]
+[['basetheme/grid-item'], ['basetheme/grid-item']];
 ```
 
 ### Settings Panels
 
 #### Spacer Settings
 
-| Option         | Value     |
-|----------------|-----------|
-| None           | `""`      |
-| Extra Small    | `xSmall`  |
-| Small          | `small`   |
-| Medium         | `medium`  |
-| Large          | `large`   |
-| Extra Large    | `xLarge`  |
+| Option            | Value     |
+| ----------------- | --------- |
+| None              | `""`      |
+| Extra Small       | `xSmall`  |
+| Small             | `small`   |
+| Medium            | `medium`  |
+| Large             | `large`   |
+| Extra Large       | `xLarge`  |
 | Extra Extra Large | `xxLarge` |
 
 #### Color Settings
 
 | Color Name | Color Code |
-|------------|------------|
+| ---------- | ---------- |
 | Primary    | `#BE2830`  |
 | Secondary  | `#5C5C5B`  |
 | Black      | `#000000`  |
@@ -129,30 +122,30 @@ function SaveComponent() {
 
 ### Block Metadata
 
-- **Title**: Grid Item
-- **Icon**: Layout
-- **Category**: Layout
-- **Parent**: `basetheme/grid-container`
-- **Description**: A grid column block
-- **Keywords**: column, item, responsive
+-   **Title**: Grid Item
+-   **Icon**: Layout
+-   **Category**: Layout
+-   **Parent**: `basetheme/grid-container`
+-   **Description**: A grid column block
+-   **Keywords**: column, item, responsive
 
 ### Attributes
 
-| Attribute Name  | Type     | Default | Description                    |
-|-----------------|----------|---------|--------------------------------|
-| `columnsWdith`  | `string` | `1/2`   | Controls column width.         |
+| Attribute Name | Type     | Default | Description            |
+| -------------- | -------- | ------- | ---------------------- |
+| `columnsWdith` | `string` | `1/2`   | Controls column width. |
 
 ### Allowed Blocks
 
-- `basetheme/text`
-- `basetheme/heading`
-- `basetheme/image`
-- `core/list`
-- `basetheme/button`
-- `contact-form-7/contact-form-selector`
-- `basetheme/card`
-- `basetheme/person`
-- `basetheme/google-maps`
+-   `basetheme/text`
+-   `basetheme/heading`
+-   `basetheme/image`
+-   `core/list`
+-   `basetheme/button`
+-   `contact-form-7/contact-form-selector`
+-   `basetheme/card`
+-   `basetheme/person`
+-   `basetheme/google-maps`
 
 ### Edit Component
 

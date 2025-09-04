@@ -1,24 +1,21 @@
 ---
 title: Image
 description: This documentation provides an overview of the Image Component, which supports media selection and size configuration for use in WordPress blocks.
-sidebar:
-  badge:
-    text: New
-    variant: note
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-import Image from "@components/utilities/image/Image.astro";
+import Image from '@components/utilities/image/Image.astro';
 
 <Image src="/assets/example.jpg" alt="Example Image" />
 
 ---
 
 The **Image Component** allows for:
-- Selecting an image from the media library
-- Choosing predefined image sizes
-- Rendering with appropriate utility classes
+
+-   Selecting an image from the media library
+-   Choosing predefined image sizes
+-   Rendering with appropriate utility classes
 
 ---
 
@@ -114,7 +111,7 @@ Image_Utils::init_image($attributes);
 The `getDefaultImageAttributes` utility defines attributes used by the block.
 
 | Attribute    | Type     | Default | Description                    |
-|--------------|----------|---------|--------------------------------|
+| ------------ | -------- | ------- | ------------------------------ |
 | `mediaId`    | `number` | `0`     | The ID of the selected image   |
 | `mediaUrl`   | `string` | `''`    | The URL of the image           |
 | `mediaAlt`   | `string` | `''`    | Alternative text for the image |

@@ -1,25 +1,22 @@
 ---
 title: Heading
 description: This documentation provides an overview of the Heading Component, which allows for customizable heading elements with selectable levels and alignment in WordPress blocks.
-sidebar:
-  badge:
-    text: Updated
-    variant: note
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-import Heading from "@components/components/heading/Heading.astro"
+import Heading from '@components/components/heading/Heading.astro';
 
 <Heading />
 
 ---
 
 The **Heading Component** provides:
-- Selection of heading levels (`h1` through `h6`)
-- Editable text content
-- Alignment controls for left, center, or right alignment
-- Integration with WordPress block editor tools
+
+-   Selection of heading levels (`h1` through `h6`)
+-   Editable text content
+-   Alignment controls for left, center, or right alignment
+-   Integration with WordPress block editor tools
 
 ---
 
@@ -57,11 +54,11 @@ registerBlockType('basetheme/heading', {
 
 ### Attributes
 
-| Attribute   | Type     | Default | Description                       |
-|-------------|----------|---------|-----------------------------------|
-| `tag`       | `string` | `'h1'`  | The heading tag (e.g., `h1`, `h2`) |
-| `heading`   | `string` | `''`    | The heading text content          |
-| `alignment` | `string` | `'left'`| Alignment of the heading text     |
+| Attribute   | Type     | Default  | Description                        |
+| ----------- | -------- | -------- | ---------------------------------- |
+| `tag`       | `string` | `'h1'`   | The heading tag (e.g., `h1`, `h2`) |
+| `heading`   | `string` | `''`     | The heading text content           |
+| `alignment` | `string` | `'left'` | Alignment of the heading text      |
 
 ---
 

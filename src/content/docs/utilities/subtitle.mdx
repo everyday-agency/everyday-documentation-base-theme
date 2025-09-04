@@ -1,15 +1,11 @@
 ---
 title: Subtitle
 description: This documentation provides an overview of the Subtitle component, which adds secondary text support with alignment control in custom WordPress blocks.
-sidebar:
-  badge:
-    text: New
-    variant: note
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-import Subtitle from "@components/utilities/subtitle/SubTitle.astro";
+import Subtitle from '@components/utilities/subtitle/SubTitle.astro';
 
 <Subtitle subtitle="This is a subtitle." />
 
@@ -26,7 +22,10 @@ The **Subtitle** component is designed for adding a secondary line of text to Wo
 ### JavaScript Import
 
 ```javascript
-import { Subtitle, defaultSubtitleAttributes } from '../../utilities/title/subtitle';
+import {
+    Subtitle,
+    defaultSubtitleAttributes,
+} from '../../utilities/title/subtitle';
 ```
 
 ```javascript
@@ -72,8 +71,8 @@ export const defaultSubtitleAttributes = {
 };
 ```
 
-- **`subtitle`**: The subtitle text.
-- **`alignment`**: Text alignment (`'left'`, `'center'`, `'right'`).
+-   **`subtitle`**: The subtitle text.
+-   **`alignment`**: Text alignment (`'left'`, `'center'`, `'right'`).
 
 ---
 
@@ -159,12 +158,12 @@ class Subtitle
 
 ## Alignment Classes
 
-| Alignment | CSS Class    |
-|-----------|--------------|
-| `left`    | `text-start` |
-| `center`  | `text-center`|
-| `right`   | `text-end`   |
-| *Default* | `text-start` |
+| Alignment | CSS Class     |
+| --------- | ------------- |
+| `left`    | `text-start`  |
+| `center`  | `text-center` |
+| `right`   | `text-end`    |
+| _Default_ | `text-start`  |
 
 ---
 
