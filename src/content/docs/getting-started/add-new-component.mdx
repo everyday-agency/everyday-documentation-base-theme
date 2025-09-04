@@ -201,8 +201,33 @@ If we want to use the [dynamic php render](#dynamic-php-rendering), we must set 
 new JSXBlock("basetheme/job-list", false);
 ```
 
-Now the block is registered. We must import now the new component into the allowed block to the container or the grid item.
-Therefor we got to `blocks/layout/container/container.jsx` or `blocks/layout/grid/grid-item.jsx` and add the new component into the allowed blocks array.
+### Global and private blocks
+
+After we registered the block, we must decide if we want to use the block as a global block or private block.
+
+To use the block as global we don't have to do anything.
+The block is now available in the Gutenberg editor for all pages and posts.
+
+If we want to use the block as a private block, we must import the block into the allowed blocks of a container or grid item and set the parent to the block inside the `registerBlockType`.
+
+```jsx
+registerBlockType('basetheme/job-list', {
+    title: 'Job List',
+    icon: postAuthor,
+    category: 'components',
+    description: 'Job List Block to display open jobs',
+    keywords: '[]',
+
+    parent: ['basetheme/container', 'basetheme/grid-item'],
+
+    supports: {},
+    attributes: { ...defaultHeadingAttributes },
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+To use the block in `blocks/layout/container/container.jsx` or `blocks/layout/grid/grid-item.jsx` we must add the block into the `ALLOWED_BLOCKS` array.
 
 ```jsx
 const ALLOWED_BLOCKS = [
