@@ -1,17 +1,80 @@
 ---
 title: Hero Image
-description: Your Description
-sidebar:
-    badge:
-        text: WIP
-        variant: danger
+description: A block for displaying a prominent hero image.
 ---
 
 import { Code } from '@astrojs/starlight/components';
-import HeroImage from "@components/components/heroImage/HeroImage.astro";
+import HeroImage from '@components/components/heroImage/HeroImage.astro';
 
 <HeroImage />
 
-## Hero Image Component
 The **Hero Image Component** allows users to display a prominent image at the top of a page or section, often used to create a visually striking introduction.
 It includes features for setting the image source, alt text, and additional styling options.
+
+## Hero Image Block (JavaScript)
+
+### Block Registration
+
+The block is registered under the namespace `basetheme/hero-image`.
+
+```javascript
+registerBlockType('basetheme/hero-image', {
+    title: 'Hero-image',
+    icon: image,
+    supports: {},
+    attributes: {
+        ...getDefaultImageAttributes,
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+---
+
+### Attributes
+
+| Attribute        | Type    | Default | Description                          |
+| ---------------- | ------- | ------- | ------------------------------------ |
+| Image Attributes | Various | Various | Set of attributes for the hero image |
+
+---
+
+### Edit Component
+
+The `EditComponent` allows users to configure the hero image attributes, including selecting an image, setting alt text, and adjusting other properties.
+
+```javascript
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    return (
+        <>
+            <InspectorControls>
+                <ImageSettings
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                    imageSizeOptions={imageSizeOptions}
+                />
+            </InspectorControls>
+
+            <Image mediaUrl={attributes.mediaUrl} alt="Upload Image" />
+        </>
+    );
+}
+```
+
+---
+
+## PHP Implementation
+
+```php
+<?php
+
+use basetheme\Utilities\Image_Utils;
+
+Image_Utils::init_image($attributes);
+
+Image_Utils::render_image($attributes, "w-100 h-100 object-fit-cover");
+
+```
