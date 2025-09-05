@@ -6,3 +6,147 @@ sidebar:
 ---
 
 import { Code } from '@astrojs/starlight/components';
+
+For our projects we use [BackstopJS](https://backstopjs.org/) to write visual regression tests.
+It allows us to take screenshots of pages and compare them to a reference screenshot to see if anything has changed.
+
+In our projects we have a `test` folder in the root directory.
+Inside this folder we have a `backstop.json` and a `backstop.config.js` file.
+
+If the backstop.json file is missing you can create it by running:
+
+```bash
+npx backstop init
+```
+
+With the init command we got the backstop_data folder. Inside the folder we have a `bitmaps_reference` folder where the reference screenshots are stored and a `backstop_data` folder where the test results are stored.
+We also have the `engine_scripts` folder where we can add custom scripts to run before or after the tests.
+We need following script to load every image with lazy loading
+
+Add the following code to `test/backstop_data/engine_scripts/puppet/onReady.js`:
+
+```js
+module.exports = async (page, scenario) => {
+    console.log('SCENARIO > ' + scenario.label);
+
+    page.evaluate(async () => {
+        document.querySelectorAll('[loading="lazy"]').forEach((element) => {
+            element.loading = 'eager';
+        });
+
+        document.querySelectorAll('[decoding="async"]').forEach((element) => {
+            element.decoding = 'sync';
+        });
+    });
+
+    await require('./clickAndHoverHelper')(page, scenario);
+
+    // add more ready handlers here...
+};
+```
+
+## How to write a new test
+
+To write a new test we need to add a new scenario in following folder `test/scenarios` and we add a new json file.
+Inside the json file we define the scenario.
+
+```json
+{
+    "label": "label for the scenario",
+    "selectors": [".bs-label"]
+}
+```
+
+The label is used to identify the scenario and the selectors are used to define which elements should be captured in the screenshot.
+
+We add all global setting inside the `backstop.config.js` file.
+Here we can define the viewports, the engine, the paths and more.
+
+```js
+module.exports = {
+    const fs = require('fs');
+const path = require('path');
+
+const BASE_URL =
+    process.env.BACKSTOP_TEST_URL ||
+    'http://everyday-base-theme.local/komponentenubersicht/';
+
+// Base configuration with global defaults
+const baseScenario = {
+    cookiePath: 'backstop_data/engine_scripts/cookies.json',
+    url: BASE_URL,
+    referenceUrl: '',
+    readyEvent: '',
+    readySelector: '',
+    delay: 2000,
+    hideSelectors: [],
+    removeSelectors: [],
+    hoverSelector: '',
+    clickSelector: '',
+    postInteractionWait: 0,
+    selectorExpansion: true,
+    expect: 0,
+    misMatchThreshold: 0.1,
+    requireSameDimensions: true,
+};
+
+// Function to load and extend scenarios
+function loadScenarios(dir) {
+    return fs.readdirSync(dir).map((file) => {
+        const scenario = require(path.join(__dirname, dir, file));
+        return { ...baseScenario, ...scenario };
+    });
+}
+
+module.exports = {
+    id: 'backstop_default',
+    viewports: [
+        { label: 'phone', width: 320, height: 480 },
+        { label: 'tablet', width: 1024, height: 768 },
+        { label: 'Desktop', width: 1920, height: 1080 },
+        { label: 'Desktop Large', width: 2560, height: 1440 },
+    ],
+    onBeforeScript: 'puppet/onBefore.js',
+    onReadyScript: 'puppet/onReady.js',
+    scenarios: loadScenarios('scenarios'),
+    paths: {
+        bitmaps_reference: 'backstop_data/bitmaps_reference',
+        bitmaps_test: 'backstop_data/bitmaps_test',
+        engine_scripts: 'backstop_data/engine_scripts',
+        html_report: 'backstop_data/html_report',
+        ci_report: 'backstop_data/ci_report',
+    },
+    report: ['browser'],
+    engine: 'puppeteer',
+    engineOptions: {
+        args: ['--no-sandbox'],
+    },
+    asyncCaptureLimit: 5,
+    asyncCompareLimit: 50,
+    debug: false,
+    debugWindow: false,
+};
+```
+
+To run the test we need a komponentenubersicht page with all components.
+We can then run following command from the root directory to create the reference screenshots.
+
+```bash
+pnpm run test:reference
+```
+
+After we have the reference screenshots we can run the test:
+
+```bash
+pnpm run test
+```
+
+```bash
+pnpm run test
+```
+
+We also can run the test with this command.
+
+```bash
+cd test && backstop test --configPath=backstop.config.js
+```
