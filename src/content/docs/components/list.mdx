@@ -1,0 +1,242 @@
+---
+title: List
+description: A flexible list component supporting both ordered and unordered lists with nested items.
+sidebar:
+    badge:
+        text: 'New'
+        variant: 'note'
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import List from '@components/components/List/List.astro';
+
+<List />
+
+<hr />
+
+A list is a collection of related items displayed in an ordered or unordered format.  
+This component allows you to define either a `<ul>` (unordered list) or `<ol>` (ordered list), with nested `list-item` blocks for flexibility.
+
+<hr />
+
+## Default Attributes
+
+### List
+
+| Attribute | Type   | Default | Description                                              |
+| --------- | ------ | ------- | -------------------------------------------------------- |
+| listType  | string | "ul"    | Determines whether the list renders as `<ul>` or `<ol>`. |
+
+### List Item
+
+| Attribute | Type   | Default | Description                        |
+| --------- | ------ | ------- | ---------------------------------- |
+| content   | string | ""      | The text content of the list item. |
+
+## Component Breakdown
+
+### Block Registration
+
+```js
+registerBlockType('basetheme/list', {
+    title: 'List',
+    icon: 'editor-ul',
+    category: 'layout',
+    attributes: {
+        listType: {
+            type: 'string',
+            default: 'ul',
+        },
+    },
+
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+**What This Does:**
+
+-   Registers a block named `basetheme/list`.
+-   Allows only `basetheme/list-item` as inner blocks.
+-   Provides a `listType` attribute to toggle between unordered and ordered lists.
+-   Uses `EditComponent` for the editor interface and `SaveComponent` for frontend rendering.
+
+**Attributes**
+
+-   **listType (string):** `"ul"` by default. Switchable between `"ul"` and `"ol"` in the block settings.
+
+---
+
+### Edit Component
+
+```js
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    const TagName = attributes.listType;
+
+    return (
+        <>
+            <InspectorControls>
+                <PanelBody title="List Settings">
+                    <SelectControl
+                        label="List Type"
+                        value={attributes.listType}
+                        options={[
+                            { label: 'Unordered List', value: 'ul' },
+                            { label: 'Ordered List', value: 'ol' },
+                        ]}
+                        onChange={(value) => setAttributes({ listType: value })}
+                    />
+                </PanelBody>
+            </InspectorControls>
+
+            <TagName className="custom-list border border-light p-2 pe-8">
+                <InnerBlocks
+                    allowedBlocks={['basetheme/list-item']}
+                    template={[['basetheme/list-item']]}
+                />
+            </TagName>
+        </>
+    );
+}
+```
+
+**Features:**
+
+-   **Inspector Controls:** Provides a dropdown for choosing between `ul` (unordered) or `ol` (ordered) lists.
+-   **Inner Blocks:** Restricts to `basetheme/list-item`, ensuring proper list structure.
+-   **Dynamic Tag:** Renders either `<ul>` or `<ol>` depending on the selected list type.
+
+---
+
+### Save Component
+
+```js
+function SaveComponent() {
+    return <InnerBlocks.Content />;
+}
+```
+
+**Features:**
+
+-   Outputs the nested list items as-is on the frontend.
+
+---
+
+## List Item
+
+### Block Registration
+
+```js
+registerBlockType('basetheme/list-item', {
+    title: 'List Item',
+    icon: 'editor-ul',
+    category: 'layout',
+    parent: ['basetheme/list'],
+    attributes: {
+        content: {
+            type: 'string',
+            default: '',
+        },
+    },
+
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+**What This Does:**
+
+-   Registers a block named `basetheme/list-item`.
+-   Restricts it to only be used within the `basetheme/list` block.
+-   Provides a `content` attribute for the item’s text.
+
+**Attributes**
+
+-   **content (string):** Default `""`. Defines the text shown in each list item.
+
+---
+
+### Edit Component
+
+```js
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    return (
+        <li className="custom-list-item">
+            <RichText
+                tagName="span"
+                value={attributes.content}
+                onChange={(newContent) =>
+                    setAttributes({ content: newContent })
+                }
+                placeholder="List item text..."
+            />
+        </li>
+    );
+}
+```
+
+**Features:**
+
+-   Renders a list item (`li`) containing editable text using `RichText`.
+-   Allows inline editing of the item’s content directly in the editor.
+
+---
+
+## PHP Rendering
+
+### List (list.php)
+
+```php
+<?php
+
+if (!isset($attributes["listType"])) {
+    $attributes["listType"] = "ul";
+}
+
+?>
+
+<div class="bs-list">
+    <?php if ($attributes["listType"] == "ul"): ?>
+        <ul class="list-group">
+            <?php echo $content; ?>
+        </ul>
+    <?php elseif ($attributes["listType"] == "ol"): ?>
+        <ol class="list-group">
+            <?php echo $content; ?>
+        </ol>
+    <?php else: ?>
+        <div class="bg-warning p-4">Error - Invalid list type: <?php echo htmlspecialchars($attributes["listType"]); ?></div>
+    <?php endif; ?>
+</div>
+```
+
+### List Item (list-item.php)
+
+```php
+<?php
+
+if (!isset($attributes["content"])) {
+    $attributes["content"] = "No List Item is Set";
+}
+
+?>
+
+<li>
+    <?php echo $attributes["content"]; ?>
+</li>
+```
+
+---
+
+## Summary
+
+The `list` block:
+
+-   Provides a flexible list structure with `<ul>` or `<ol>` support.
+-   Uses nested `list-item` blocks for individual items.
+-   Editable inline text for each list item via `RichText`.
+-   Outputs clean, semantic markup through PHP templates.
