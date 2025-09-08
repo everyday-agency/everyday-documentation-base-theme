@@ -1,73 +1,94 @@
 ---
 title: How to write tests
-description: How to write backstop tests.
+description: Unified guide for writing and running BackstopJS visual regression tests in our projects.
 sidebar:
     order: 4
     badge:
-        text: New
-        variant: note
+        text: Updated
+        variant: tip
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-For our projects we use [BackstopJS](https://backstopjs.org/) to write visual regression tests.
-It allows us to take screenshots of pages and compare them to a reference screenshot to see if anything has changed.
+This guide explains how we structure, write, and run **visual regression tests** using [BackstopJS](https://backstopjs.org/). It merges and streamlines our previous docs.
 
-In our projects we have a `test` folder in the root directory.
-Inside this folder we have a `backstop.json` and a `backstop.config.js` file.
+---
 
-If the backstop.json file is missing you can create it by running:
+# Overview
 
-```bash
-npx backstop init
+We use **BackstopJS** to:
+
+-   capture screenshots of pages/components,
+-   compare them against a reference,
+-   and highlight unintended visual changes early in development.
+
+Our test assets live in a project‑root `test/` folder. The most important files are:
+
+-   `test/backstop.config.js` — our main BackstopJS configuration
+-   `test/scenarios/*.json` — individual scenario definitions
+-   `test/backstop_data/engine_scripts/puppet/onReady.js` — script that eagerly loads lazy images and runs helpers
+
+> If `backstop.json` is missing, you can bootstrap defaults with `npx backstop init` — but our setup uses **`backstop.config.js`** as the single source of truth.
+
+---
+
+# Folder Structure
+
+```
+project/
+├─ src/ …
+├─ blocks/ …
+├─ test/
+│  ├─ backstop.config.js
+│  ├─ scenarios/
+│  │  └─ example.json
+│  └─ backstop_data/
+│     ├─ bitmaps_reference/
+│     ├─ bitmaps_test/
+│     ├─ ci_report/
+│     ├─ html_report/
+│     └─ engine_scripts/
+│        └─ puppet/
+│           ├─ onBefore.js
+│           └─ onReady.js
+└─ package.json
 ```
 
-With the init command we got the backstop_data folder. Inside the folder we have a `bitmaps_reference` folder where the reference screenshots are stored and a `backstop_data` folder where the test results are stored.
-We also have the `engine_scripts` folder where we can add custom scripts to run before or after the tests.
-We need following script to load every image with lazy loading
+---
 
-Add the following code to `test/backstop_data/engine_scripts/puppet/onReady.js`:
+# Engine Script: `onReady.js`
+
+We force‑load images that use lazy/async hints so screenshots are consistent across runs.
 
 ```js
+// test/backstop_data/engine_scripts/puppet/onReady.js
 module.exports = async (page, scenario) => {
     console.log('SCENARIO > ' + scenario.label);
 
-    page.evaluate(async () => {
-        document.querySelectorAll('[loading="lazy"]').forEach((element) => {
-            element.loading = 'eager';
+    await page.evaluate(() => {
+        document.querySelectorAll('[loading="lazy"]').forEach((el) => {
+            el.loading = 'eager';
         });
 
-        document.querySelectorAll('[decoding="async"]').forEach((element) => {
-            element.decoding = 'sync';
+        document.querySelectorAll('[decoding="async"]').forEach((el) => {
+            el.decoding = 'sync';
         });
     });
 
     await require('./clickAndHoverHelper')(page, scenario);
-
     // add more ready handlers here...
 };
 ```
 
-## How to write a new test
+---
 
-To write a new test we need to add a new scenario in following folder `test/scenarios` and we add a new json file.
-Inside the json file we define the scenario.
+# Backstop Config (`test/backstop.config.js`)
 
-```json
-{
-    "label": "label for the scenario",
-    "selectors": [".bs-label"]
-}
-```
-
-The label is used to identify the scenario and the selectors are used to define which elements should be captured in the screenshot.
-
-We add all global setting inside the `backstop.config.js` file.
-Here we can define the viewports, the engine, the paths and more.
+Global defaults live here. Scenarios are auto‑loaded from `test/scenarios` and shallow‑merged with the base scenario.
 
 ```js
-module.exports = {
-    const fs = require('fs');
+// test/backstop.config.js
+const fs = require('fs');
 const path = require('path');
 
 const BASE_URL =
@@ -93,12 +114,15 @@ const baseScenario = {
     requireSameDimensions: true,
 };
 
-// Function to load and extend scenarios
+// Load and extend scenarios from /test/scenarios
 function loadScenarios(dir) {
-    return fs.readdirSync(dir).map((file) => {
-        const scenario = require(path.join(__dirname, dir, file));
-        return { ...baseScenario, ...scenario };
-    });
+    return fs
+        .readdirSync(dir)
+        .filter((file) => file.endsWith('.json'))
+        .map((file) => {
+            const scenario = require(path.join(__dirname, dir, file));
+            return { ...baseScenario, ...scenario };
+        });
 }
 
 module.exports = {
@@ -106,8 +130,8 @@ module.exports = {
     viewports: [
         { label: 'phone', width: 320, height: 480 },
         { label: 'tablet', width: 1024, height: 768 },
-        { label: 'Desktop', width: 1920, height: 1080 },
-        { label: 'Desktop Large', width: 2560, height: 1440 },
+        { label: 'desktop', width: 1920, height: 1080 },
+        { label: 'desktop-large', width: 2560, height: 1440 },
     ],
     onBeforeScript: 'puppet/onBefore.js',
     onReadyScript: 'puppet/onReady.js',
@@ -121,9 +145,7 @@ module.exports = {
     },
     report: ['browser'],
     engine: 'puppeteer',
-    engineOptions: {
-        args: ['--no-sandbox'],
-    },
+    engineOptions: { args: ['--no-sandbox'] },
     asyncCaptureLimit: 5,
     asyncCompareLimit: 50,
     debug: false,
@@ -131,25 +153,86 @@ module.exports = {
 };
 ```
 
-To run the test we need a komponentenubersicht page with all components.
-We can then run following command from the root directory to create the reference screenshots.
+---
 
-```bash
-pnpm run test:reference
+# Writing a Scenario
+
+Create a file in `test/scenarios/` with a meaningful label and one or more selectors. We typically prefix component hooks with `bs-` in markup.
+
+```json
+// test/scenarios/component-name.json
+{
+    "label": "component-name",
+    "selectors": [".bs-component-name"]
+}
 ```
 
-After we have the reference screenshots we can run the test:
-
-```bash
-pnpm run test
+```php
+<!-- Example markup hook in your dynamic PHP -->
+<div class="bs-component-name">
+  <!-- Component HTML -->
+</div>
 ```
 
-```bash
-pnpm run test
+> You can also target full pages by omitting `selectors` (Backstop will default to `document`), or capture multiple regions by adding more selectors.
+
+---
+
+# Commands
+
+These are the standard scripts we use. Add them to your `package.json`.
+
+```json
+{
+    "scripts": {
+        "build:test": "NODE_ENV=production wp-scripts build src/js/index.js blocks/utilities/**/*.jsx blocks/components/**/*.jsx && cd test && backstop test --configPath=backstop.config.js",
+        "test:reference": "cd test && backstop reference --configPath=backstop.config.js",
+        "test:approve": "cd test && backstop approve --configPath=backstop.config.js",
+        "test": "cd test && backstop test --configPath=backstop.config.js"
+    }
+}
 ```
 
-We also can run the test with this command.
+## Typical workflow
 
-```bash
-cd test && backstop test --configPath=backstop.config.js
-```
+1. **Create/Update scenarios** in `test/scenarios`.
+2. **Generate references** (first run or after intentional UI changes):
+    ```bash
+    pnpm run test:reference
+    ```
+3. **Run tests**:
+    ```bash
+    pnpm run test
+    ```
+4. **Approve** expected diffs (only if changes are desired):
+    ```bash
+    pnpm run test:approve
+    ```
+
+> You can also run Backstop directly: `cd test && backstop test --configPath=backstop.config.js`.
+
+---
+
+# Best Practices
+
+-   **Stable fixtures:** Ensure data and network calls are deterministic (mock if needed).
+-   **Consistent states:** Use `onBefore`/`onReady` to open menus, set cookies, or log in.
+-   **Explicit hooks:** Add `.bs-*` classes for robust, layout‑independent selectors.
+-   **Viewport coverage:** Keep viewports minimal but meaningful; avoid over‑testing.
+-   **Small thresholds:** Prefer `misMatchThreshold: 0.1` or lower; raise only when justified.
+
+---
+
+# Troubleshooting
+
+-   **Element not found for capturing**: Verify the selector exists at test time, ensure `delay` is sufficient, or use `readySelector`.
+-   **Blank/partial images**: Ensure lazy images are eagerly loaded (see `onReady.js`).
+-   **Font or anti‑aliasing noise**: Consider `requireSameDimensions: true` and keep the same OS/rendering stack in CI.
+-   **Wrong base URL**: Set `BACKSTOP_TEST_URL` to the correct environment.
+
+---
+
+# Further Reading
+
+-   Medium: _Visual Regression Testing_ — high‑level overview and motivation.
+-   BackstopJS Docs — scenarios, viewports, engine scripts, CI.
