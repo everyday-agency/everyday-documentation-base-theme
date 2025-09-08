@@ -1,0 +1,110 @@
+---
+title: Text
+description: Text block documentation for Gutenberg + PHP integration.
+sidebar:
+    badge:
+        text: 'New'
+        variant: 'note'
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import Text from '@components/utilities/text/Text.astro';
+
+<Text text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." />
+
+<hr />
+
+The **Text** block provides a simple wrapper around the shared `Text` utility.  
+It outputs styled paragraph or rich text content with optional alignment, while delegating rendering to PHP utilities for consistency across the theme.
+
+<hr />
+
+## Default Attributes
+
+### Text Block
+
+| Attribute | Type   | Default | Description                                                 |
+| --------- | ------ | ------- | ----------------------------------------------------------- |
+| text      | string | ""      | The content of the text block.                              |
+| alignment | string | ""      | Optional alignment value (e.g., `left`, `center`, `right`). |
+
+---
+
+## Component Breakdown
+
+### Block Registration
+
+```js
+registerBlockType('basetheme/text', {
+    title: 'Text',
+    icon: paragraph,
+    category: 'layout',
+    parent: ['basetheme/grid-item', 'basetheme/container'],
+    description: 'A Description',
+    keywords: [],
+    supports: {},
+    attributes: {
+        text: { type: 'string' },
+        alignment: { type: 'string' },
+    },
+    edit: EditComponent,
+    save: () => null, // PHP handles rendering
+});
+```
+
+**Notes:**
+
+-   Registers `basetheme/text` for usage inside `grid-item` or `container` blocks.
+-   Keeps attributes minimal (`text`, `alignment`).
+-   `save: null` ensures rendering is server-side only via PHP.
+
+---
+
+### Edit Component
+
+```js
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    return <Text attributes={attributes} setAttributes={setAttributes} />;
+}
+```
+
+**Features:**
+
+-   Delegates editor UI and behavior to your shared `<Text />` utility component.
+-   This allows consistent inline editing, toolbar alignment controls, and attribute handling across blocks.
+
+---
+
+## PHP Rendering
+
+```php
+<?php
+
+use basetheme\Utilities\Text_Utils;
+
+Text_Utils::init_text($attributes);
+
+?>
+
+<div class="bs-text text">
+    <?php echo Text_Utils::render_text($attributes["text"], $attributes); ?>
+</div>
+```
+
+**Notes:**
+
+-   `Text_Utils::init_text($attributes)` sets up text-specific defaults or sanitization.
+-   `Text_Utils::render_text($attributes["text"], $attributes)` handles the actual HTML output, ensuring attributes like alignment are applied consistently.
+-   Wrapper `<div class="bs-text text">` allows styling hooks.
+
+---
+
+## Summary
+
+The **Text** block:
+
+-   Is a lightweight Gutenberg block using a shared `Text` utility for editing and rendering.
+-   Keeps logic simple: only `text` and `alignment` attributes are stored.
+-   Renders exclusively on the server-side through PHP (`Text_Utils`), ensuring consistent markup across environments.
