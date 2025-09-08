@@ -1,10 +1,140 @@
 ---
 title: Not-found
 description: Your Description
+sidebar:
+    badge:
+        text: 'Updated'
+        variant: tip
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-import NotFound from "@components/layout/not-found/NotFound.astro";
+import NotFound from '@components/layout/not-found/NotFound.astro';
 
 <NotFound />
+
+<hr />
+
+The **Not Found** block renders a 404 error page layout.  
+It ensures a styled "Page not found" message with a link back to the homepage, providing a consistent fallback experience.
+
+<hr />
+
+## Default Attributes
+
+This block does not define custom attributes.
+
+---
+
+## Component Breakdown
+
+### Block Registration
+
+```js
+registerBlockType('everydayblocktheme/not-found', {
+    title: 'not-found',
+    icon: layout,
+    category: 'layout',
+    description: 'A Description',
+    keywords: '[]',
+    supports: {},
+    attributes: {},
+
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+**Notes:**
+
+-   Registers `everydayblocktheme/not-found` as a layout block.
+-   Uses `save: null` to enforce server-side rendering in PHP.
+
+---
+
+### Edit Component
+
+```js
+function EditComponent() {
+    return (
+        <div className="container">
+            <div className="row">
+                <div className="col-12">
+                    <div className="position-relative vh-97">
+                        <div className="position-absolute top-50 start-50 translate-middle">
+                            <h1 className="w-100 fs-300 fw-bold text-gray-light text-center">
+                                404
+                            </h1>
+                        </div>
+                        <div className="position-absolute top-50 start-50 translate-middle w-100">
+                            <h2 className="w-100 fs-30 fw-bold text-gray-dark text-center">
+                                Tut uns leid, die Seite konnte nicht gefunden
+                                werden.
+                            </h2>
+                        </div>
+                        <div className="position-absolute top-65 start-50 translate-middle">
+                            <div className="btn btn-primary w-100">
+                                Zur Startseite
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+```
+
+**Features:**
+
+-   Displays a preview layout directly in the editor for 404 content.
+-   Provides heading styles for the error code and message.
+-   Adds a button-like element (non-functional in editor).
+
+---
+
+## PHP Rendering
+
+```php
+<section class="not-found">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="position-relative vh-60">
+          <div class="position-absolute top-50 start-50 translate-middle">
+            <h1 class="w-100 fs-300 fw-bold text-gray-400 text-center">
+              404
+            </h1>
+          </div>
+          <div class="position-absolute top-50 start-50 translate-middle w-100">
+            <h2 class="w-100 fs-30 fw-bold text-gray-800 text-center">
+              Tut uns leid, die Seite konnte nicht gefunden werden.
+            </h2>
+          </div>
+          <div class="position-absolute top-65 start-50 translate-middle">
+            <a href="<?php echo get_home_url(); ?>" class="btn btn-secondary">
+              Zur Startseite
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+**Notes:**
+
+-   Wraps the block in a `<section class="not-found">` container for styling and semantics.
+-   Renders a **404 heading**, **error message**, and **link back to homepage**.
+-   Uses `get_home_url()` to dynamically generate the link target.
+
+---
+
+## Summary
+
+The **Not Found** block:
+
+-   Provides a semantic and styled 404 error page layout.
+-   Is server-rendered only (`save: null` in JS, template in PHP).
+-   Ensures users always have a fallback navigation option back to the homepage.
