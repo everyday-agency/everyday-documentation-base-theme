@@ -1,0 +1,314 @@
+---
+title: Logo Swiper
+description: Your Description
+sidebar:
+    badge:
+        text: 'WIP'
+        variant: danger
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+import LogoSwiper from '@components/components/LogoSwiper/LogoSwiper.astro';
+
+<LogoSwiper />
+
+<hr />
+
+The **Logo Swiper** is a horizontally scrolling carousel for partner/client logos.  
+It consists of a `logo-swiper-container` (outer Swiper instance) and one or more `logo-swiper-item` blocks (slides).  
+Spacing is controlled via the shared `SpacerSettings`, and slider behavior is configured via `SwiperSettings`.
+
+<hr />
+
+## Default Attributes
+
+### Logo Swiper Container
+
+| Attribute      | Type   | Default  | Description                                                               |
+| -------------- | ------ | -------- | ------------------------------------------------------------------------- |
+| uuid           | string | ""       | Unique identifier generated per swiper instance (used to scope controls). |
+| spacer         | string | "medium" | Controls vertical spacing classes for the section wrapper.                |
+| navigation     | string | "false"  | Enables next/prev arrows when set to `"true"`.                            |
+| pagination     | string | "false"  | Enables pagination bullets when set to `"true"`.                          |
+| infiniteLoop   | string | "false"  | Enables continuous loop effect when set to `"true"`.                      |
+| (swiper attrs) | mixed  | —        | Additional options provided by **`SwiperSettings`** UI.                   |
+
+> The container also inherits all attributes from your shared **`defaultSwiperAttributes`** and **`defaultSpacerAttributes`**.
+
+### Logo Swiper Item
+
+| Attribute          | Type  | Default | Description                                                           |
+| ------------------ | ----- | ------- | --------------------------------------------------------------------- |
+| (image attributes) | mixed | —       | Provided by `getDefaultImageAttributes` (e.g., `mediaUrl`, `alt`, …). |
+
+> Images are selected/configured via the **`ImageSettings`** panel; common sizes: `pageBanner`, `full`, `medium`.
+
+<hr />
+
+## Component Breakdown
+
+### Block Registration (Container)
+
+```js
+registerBlockType('basetheme/logo-swiper-container', {
+    title: 'Logo-swiper-container',
+    icon: layout,
+    category: 'layout',
+    description: 'A Description',
+    keywords: '[]',
+    supports: {
+        layout: {
+            allowEditing: false,
+            default: {
+                type: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'flex-start',
+            },
+        },
+    },
+    attributes: {
+        uuid: { type: 'string', default: '' },
+        ...defaultSwiperAttributes,
+        ...defaultSpacerAttributes,
+    },
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+**What This Does:**
+
+-   Registers `basetheme/logo-swiper-container` and enables layout support in the editor.
+-   Merges **`defaultSwiperAttributes`** and **`defaultSpacerAttributes`** into the block’s attributes.
+-   Uses `EditComponent` to expose **Spacer** and **Swiper** controls, and `SaveComponent` to output the inner content.
+
+**Attributes**
+
+-   **uuid (string):** Automatically generated per instance to isolate Swiper controls (navigation/pagination).
+-   **spacer (string):** From `defaultSpacerAttributes`, controls vertical spacing classes.
+-   **swiper options:** From `defaultSwiperAttributes`, surfaced in the **`SwiperSettings`** panel.
+
+---
+
+### Edit Component (Container)
+
+```js
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+
+    useEffect(() => {
+        if (!attributes.uuid) {
+            setAttributes({ uuid: uuidv4() });
+        }
+    }, [attributes.uuid, setAttributes]);
+
+    const allowedBlocks = ['basetheme/logo-swiper-item'];
+    const BLOCKS_TEMPLATE = [['basetheme/logo-swiper-item']];
+
+    const blockProps = useBlockProps({ className: 'container-row-wrapper' });
+    const innerBlocksProps = useInnerBlocksProps(
+        { className: 'container-row' },
+        {
+            allowedBlocks,
+            BLOCKS_TEMPLATE,
+            templateLock: false,
+        }
+    );
+
+    return (
+        <>
+            <InspectorControls>
+                <SpacerSettings
+                    title="Container Settings"
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                />
+                <SwiperSettings
+                    title="Hero Slider Settings"
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                />
+            </InspectorControls>
+            <div className="my-4">
+                <div
+                    className={`container-fluid ${spacerClass(attributes.spacer)}`}
+                >
+                    <div className="border border-light p-2 bg-gray-100">
+                        <div {...blockProps}>
+                            <div {...innerBlocksProps} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+```
+
+**Features:**
+
+-   **UUID Generation:** Ensures each swiper gets a unique ID for scoping navigation/pagination elements.
+-   **Inspector Controls:** Provides **Spacer** and **Swiper** configuration panels.
+-   **Inner Blocks:** Restricts to `logo-swiper-item` and seeds a default slide via `BLOCKS_TEMPLATE`.
+
+---
+
+### Save Component (Container)
+
+```js
+function SaveComponent() {
+    return <InnerBlocks.Content />;
+}
+```
+
+**Features:**
+
+-   Outputs only the inner content; Swiper structure and initialization are handled by PHP utilities.
+
+---
+
+## PHP Rendering
+
+### Container (`logo-swiper-container.php`)
+
+```php
+<?php
+
+use basetheme\Utilities\Spacer_Utils;
+use basetheme\Utilities\Swiper_Utils;
+
+Swiper_Utils::init_swiper($attributes);
+
+if (!isset($attributes["spacer"])) {
+    $attributes["spacer"] = "medium";
+}
+?>
+
+<section class="bs-logo-swiper logo-swiper <?php echo Spacer_Utils::render_spacer($attributes['spacer']); ?>">
+    <div class="container-fluid px-0">
+        <div class="swiper swiper-id-<?php echo $attributes["uuid"]; ?> <?php echo $attributes["infiniteLoop"] == "true" ? 'swiper-transition-timing-linear' : ''; ?>"
+             data-swiper <?php echo Swiper_Utils::render_swiper_settings($attributes); ?>>
+
+            <div class="swiper-wrapper h-100">
+                <?php echo $content; ?>
+            </div>
+
+            <?php if ($attributes["pagination"] == 'true') : ?>
+                <div class="swiper-pagination swiper-pagination-id-<?php echo $attributes["uuid"]; ?>"></div>
+            <?php endif; ?>
+
+            <?php if ($attributes["navigation"] == 'true') : ?>
+                <div class="swiper-button-prev swiper-button__prev-id-<?php echo $attributes["uuid"]; ?>"></div>
+                <div class="swiper-button-next swiper-button__next-id-<?php echo $attributes["uuid"]; ?>"></div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+```
+
+**Notes:**
+
+-   `Swiper_Utils::init_swiper($attributes)` should enqueue/initialize Swiper assets once.
+-   `Swiper_Utils::render_swiper_settings($attributes)` outputs `data-` attributes consumed by your frontend Swiper init.
+-   `uuid` ensures multiple instances can coexist without conflicting selectors.
+
+---
+
+## Logo Swiper Item
+
+### Block Registration
+
+```js
+registerBlockType('basetheme/logo-swiper-item', {
+    title: 'Logo-swiper-item',
+    icon: layout,
+    category: 'layout',
+    parent: ['basetheme/logo-swiper-container'],
+    description: 'A Description',
+    keywords: '[]',
+    supports: {},
+    attributes: {
+        ...getDefaultImageAttributes,
+    },
+    edit: EditComponent,
+    save: () => null,
+});
+```
+
+**What This Does:**
+
+-   Registers `basetheme/logo-swiper-item` as a child-only block of the container.
+-   Pulls in image attributes via `getDefaultImageAttributes` to render a logo image.
+
+**Attributes**
+
+-   **image (mixed):** From `getDefaultImageAttributes` (e.g., `mediaId`, `mediaUrl`, `alt`, `size`, `width`, `height`, …).
+
+---
+
+### Edit Component (Item)
+
+```js
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    return (
+        <>
+            <InspectorControls>
+                <ImageSettings
+                    attributes={attributes}
+                    setAttributes={setAttributes}
+                    imageSizeOptions={[
+                        { value: 'pageBanner', label: 'Banner' },
+                        { value: 'full', label: 'Full' },
+                        { value: 'medium', label: 'Medium' },
+                    ]}
+                />
+            </InspectorControls>
+            <div className="container-item-1/4 logo-swiper-item-backend">
+                <Image mediaUrl={attributes.mediaUrl} />
+            </div>
+        </>
+    );
+}
+```
+
+**Features:**
+
+-   Configures the image via `ImageSettings`, including selectable sizes.
+-   Displays a lightweight preview (`<Image mediaUrl={attributes.mediaUrl} />`) in the editor.
+
+---
+
+### PHP Rendering (Item)
+
+```php
+<?php
+
+use basetheme\Utilities\Image_Utils;
+
+Image_Utils::init_image($attributes);
+?>
+
+<div class="swiper-slide logo-swiper-slide h-100">
+    <div class="logo-swiper-image">
+        <?php Image_Utils::render_image($attributes, "h-100 w-auto"); ?>
+    </div>
+</div>
+```
+
+**Notes:**
+
+-   `Image_Utils::render_image` should output an optimized `<img>`/`<picture>` based on the attributes and requested classes.
+-   Consider constraining slide height so all logos align visually in the track.
+
+---
+
+## Summary
+
+The **Logo Swiper**:
+
+-   Provides a Swiper-powered logo carousel with configurable **navigation**, **pagination**, and **looping**.
+-   Uses a container + item pattern, with a unique `uuid` per instance for scoped controls.
+-   Leverages shared **Spacer**, **Swiper**, and **Image** utilities for consistent UI and output.
+-   Renders semantic, minimal markup and defers advanced behavior to your PHP utilities and frontend JS.
