@@ -1,0 +1,108 @@
+---
+title: Main
+description: Main block documentation for Gutenberg + PHP integration.
+sidebar:
+    badge:
+        text: 'New'
+        variant: note
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+<hr />
+
+The **Main** block provides the semantic `<main>` wrapper for page content.  
+It is a layout block that enforces the use of `core/post-content` within it and ensures consistent rendering in both the editor and frontend.
+
+<hr />
+
+## Default Attributes
+
+This block does not define custom attributes.
+
+---
+
+## Component Breakdown
+
+### Block Registration
+
+```js
+registerBlockType('basetheme/main', {
+    title: 'Main',
+    icon: layout,
+    category: 'layout',
+    description: 'A Description',
+    keywords: '[]',
+    supports: {},
+    attributes: {},
+
+    edit: EditComponent,
+    save: SaveComponent,
+});
+```
+
+**Notes:**
+
+-   Registers `basetheme/main` as a layout block.
+-   No custom attributes are defined—content is handled via InnerBlocks.
+
+---
+
+### Edit Component
+
+```js
+function EditComponent(props) {
+    const { attributes, setAttributes } = props;
+    return (
+        <InnerBlocks
+            allowedBlocks={['core/post-content']}
+            template={[['core/post-content']]}
+        />
+    );
+}
+```
+
+**Features:**
+
+-   Uses `InnerBlocks` to allow only the **core/post-content** block inside.
+-   Defines a template with a single `core/post-content` block by default.
+
+---
+
+### Save Component
+
+```js
+function SaveComponent() {
+    return <InnerBlocks.Content />;
+}
+```
+
+**Notes:**
+
+-   Outputs the inner block content into the saved markup.
+-   This ensures `post-content` is rendered properly.
+
+---
+
+## PHP Rendering
+
+```php
+<main role="main" class="main">
+    <?php echo $content; ?>
+</main>
+```
+
+**Notes:**
+
+-   Wraps the block output in a semantic `<main>` element with `role="main"`.
+-   `$content` represents the rendered output of the `InnerBlocks` (in this case, the post content).
+
+---
+
+## Summary
+
+The **Main** block:
+
+-   Acts as a semantic container for the main post content.
+-   Enforces usage of the `core/post-content` block within it.
+-   Outputs a clean `<main>` wrapper in PHP for consistent frontend markup.
