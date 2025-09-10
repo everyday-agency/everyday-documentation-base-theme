@@ -1,0 +1,266 @@
+---
+title: Webpack
+description: How to set up and use Webpack with your project.
+sidebar:
+    order: 5
+    badge:
+        text: New
+        variant: default
+---
+
+import { Code } from '@astrojs/starlight/components';
+
+A minimal, practical guide to your **Webpack** setup built on top of `@wordpress/scripts`.  
+This page explains the config, project conventions, path aliases, environment variables, and common usage patterns.
+
+<hr />
+
+## Overview
+
+Your build is based on the official **`@wordpress/scripts`** webpack config and then extended with a few quality‑of‑life plugins:
+
+-   **`@wordpress/scripts/config/webpack.config`** – baseline configuration used by Gutenberg projects.
+-   **`webpack-build-notifier`** – native OS notifications for build errors/warnings.
+-   **`clean-terminal-webpack-plugin`** – clears the terminal before each rebuild (watch mode).
+-   **`dotenv-webpack`** – loads variables from `.env.local` into your build (client‑side access must be explicit).
+
+<hr />
+
+## Configuration
+
+### `webpack.config.js`
+
+```js
+const Dotenv = require('dotenv-webpack');
+const path = require('path');
+const defaultConfig = require('@wordpress/scripts/config/webpack.config');
+const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
+const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
+
+module.exports = {
+    ...defaultConfig,
+
+    resolve: {
+        alias: {
+            '@utilities': path.resolve(__dirname, 'blocks/utilities'),
+            '@configuration': path.resolve(__dirname, 'blocks/configuration'),
+            '@components': path.resolve(__dirname, 'blocks/components'),
+        },
+        extensions: ['.js', '.jsx'], // Resolve these automatically in imports
+    },
+
+    module: {
+        ...defaultConfig.module,
+        rules: [...defaultConfig.module.rules],
+    },
+
+    plugins: [
+        ...defaultConfig.plugins,
+        new WebpackBuildNotifierPlugin({
+            title: 'Base Theme',
+            logo: path.resolve('./webpack_icons/favicon.png'),
+            suppressSuccess: true,
+        }),
+        new CleanTerminalPlugin({
+            beforeCompile: true,
+            message: 'New Build Started...',
+            onlyInWatchMode: true,
+        }),
+        new Dotenv({ path: '.env.local' }),
+    ],
+};
+```
+
+**Notes:**
+
+-   We spread (`...`) the WordPress defaults first and then override/extend specific sections.
+-   **`resolve.alias`** maps short import paths to your block folders (see below).
+-   **`extensions`** lets you omit `.js`/`.jsx` in imports.
+
+<hr />
+
+## Folder Aliases
+
+These aliases simplify imports in your JSX files.
+
+```js
+alias: {
+  '@utilities': path.resolve(__dirname, 'blocks/utilities'),
+  '@configuration': path.resolve(__dirname, 'blocks/configuration'),
+  '@components': path.resolve(__dirname, 'blocks/components'),
+}
+```
+
+### Example usage
+
+```js
+import {
+    Image,
+    ImageSettings,
+    getDefaultImageAttributes,
+} from '@utilities/image/image';
+
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
+import { Subtitle, defaultSubtitleAttributes } from '@utilities/title/subtitle';
+
+import {
+    SpacerSettings,
+    defaultSpacerAttributes,
+    spacerClass,
+} from '@configuration/spacer/spacer';
+
+import {
+    defaultColorNameAttributes,
+    ColorSettings,
+} from '@configuration/color/colors';
+
+import {
+    defaultAlignAttributes,
+    alignClass,
+    AlignSettings,
+} from '@configuration/align/align';
+```
+
+This keeps imports short, consistent, and editor‑friendly.
+
+### Editor IntelliSense (optional but recommended)
+
+To enable **Go to definition** and auto‑import in VS Code, add a `jsconfig.json` (or `tsconfig.json` if you use TypeScript) in your project root:
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@utilities/*": ["blocks/utilities/*"],
+            "@configuration/*": ["blocks/configuration/*"],
+            "@components/*": ["blocks/components/*"]
+        }
+    },
+    "exclude": ["node_modules"]
+}
+```
+
+<hr />
+
+## Environment Variables
+
+`dotenv-webpack` loads variables from **`.env.local`** at build time. Examples:
+
+```bash
+# Example
+API_BASE_URL=https://api.example.com
+FEATURE_FLAG_EXPERIMENTAL=true
+```
+
+In code, access via `process.env`:
+
+```js
+const api = process.env.API_BASE_URL;
+```
+
+> **Important:** Anything bundled client‑side is **not private**. Only expose values safe for the browser.
+
+<hr />
+
+## NPM Scripts
+
+With `@wordpress/scripts`, you typically use:
+
+```json
+{
+    "scripts": {
+        "start": "wp-scripts start", // dev server / watch
+        "build": "wp-scripts build", // production build
+        "lint:js": "wp-scripts lint-js",
+        "format": "wp-scripts format"
+    }
+}
+```
+
+-   **`start`**: watches files and rebuilds on change; terminal is cleared each cycle.
+-   **`build`**: creates optimized output for production.
+
+<hr />
+
+## How It Fits Together
+
+1. You write blocks under `blocks/…` using the **aliases** for imports.
+2. Running `start`/`build` uses the **WordPress webpack base** plus your **plugins**.
+3. **Dotenv** injects environment values.
+4. Outputs are generated per the defaults from `@wordpress/scripts` (asset files, dependencies, etc.).
+
+<hr />
+
+## Common Recipes
+
+### Import without extensions
+
+Thanks to `resolve.extensions`, these are equivalent:
+
+```js
+import { Image } from '@utilities/image/image';
+// instead of
+import { Image } from '@utilities/image/image.jsx';
+```
+
+### Add another alias
+
+```js
+resolve: {
+  alias: {
+    ...,
+    '@hooks': path.resolve(__dirname, 'blocks/hooks')
+  }
+}
+```
+
+### Limit noisy notifications
+
+```js
+new WebpackBuildNotifierPlugin({
+    title: 'Base Theme',
+    suppressSuccess: true, // only show warnings/errors
+    suppressWarning: false,
+});
+```
+
+<hr />
+
+## Troubleshooting
+
+-   **Alias not resolved**  
+    Ensure the path exists and matches the project structure. Add a `jsconfig.json` to help VS Code.
+
+-   **`process.env` is undefined**  
+    Confirm `.env.local` exists and that `new Dotenv({ path: '.env.local' })` is present. Restart the dev server after changes.
+
+-   **Unexpected file extension errors**  
+    Make sure `extensions: ['.js', '.jsx']` includes all extensions you use (e.g., add `'.ts', '.tsx'` for TypeScript).
+
+-   **No notifications on macOS/Linux/Windows**  
+    Some environments require enabling desktop notifications or allowing the terminal app to send them.
+
+<hr />
+
+## FAQ
+
+**Q: Can I add TypeScript?**  
+Yes. Add `ts-loader` or use Babel preset TS, include `'.ts', '.tsx'` in `resolve.extensions`, and create a `tsconfig.json`.
+
+**Q: How do I analyze bundle size?**  
+Install `webpack-bundle-analyzer` and add it to `plugins` in a conditional (only in production).
+
+**Q: Where do outputs go?**  
+`@wordpress/scripts` manages output and asset manifests. If you need custom output rules, you can extend `output` but be careful not to break WordPress asset handling.
+
+<hr />
+
+## Summary
+
+-   Based on **`@wordpress/scripts`** with sensible extensions.
+-   **Aliases** keep imports clean and maintainable.
+-   **Dotenv** powers environment‑specific values.
+-   **Notifier** + **Clean Terminal** improve DX.
+
+That’s it — you’re set up for a smooth Gutenberg block development experience with Webpack.
