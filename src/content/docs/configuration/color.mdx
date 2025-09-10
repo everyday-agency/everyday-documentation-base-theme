@@ -5,10 +5,9 @@ description: This documentation provides an overview of the Color Settings compo
 
 import { Code } from '@astrojs/starlight/components';
 
-import Color from "@components/configuration/color/Color.astro";
+import Color from '@components/configuration/color/Color.astro';
 
 <Color />
-
 
 ---
 
@@ -26,7 +25,7 @@ The **Color Settings** feature enables users to choose a color from a predefined
 import {
     defaultColorNameAttributes,
     ColorSettings,
-} from '../../configuration/color/colors';
+} from '@configuration/color/colors';
 ```
 
 ```jsx
@@ -70,7 +69,6 @@ switch (attributes.colorName) {
 <div className={bgColor}>
 ```
 
-
 ---
 
 ## Default Color Attributes
@@ -83,7 +81,7 @@ export const defaultColorNameAttributes = {
 };
 ```
 
-- **`colorName`**: The name of the color, defaulting to `'primary'`.
+-   **`colorName`**: The name of the color, defaulting to `'primary'`.
 
 ---
 
@@ -103,13 +101,13 @@ export const colorValues = [
 
 ### Color Definitions
 
-| Name       | Hex Code   |
-|------------|------------|
-| `primary`  | `#BE2830`  |
-| `secondary`| `#5C5C5B`  |
-| `black`    | `#000000`  |
-| `white`    | `#ffffff`  |
-| `gray`     | `#adb5bd`  |
+| Name        | Hex Code  |
+| ----------- | --------- |
+| `primary`   | `#BE2830` |
+| `secondary` | `#5C5C5B` |
+| `black`     | `#000000` |
+| `white`     | `#ffffff` |
+| `gray`      | `#adb5bd` |
 
 ---
 
@@ -149,9 +147,9 @@ export function ColorSettings({ title, attributes, setAttributes }) {
 
 ### Props
 
-- **`title`**: The title displayed for the color settings panel.
-- **`attributes`**: The block attributes, including the current color name.
-- **`setAttributes`**: A function to update the block's attributes.
+-   **`title`**: The title displayed for the color settings panel.
+-   **`attributes`**: The block attributes, including the current color name.
+-   **`setAttributes`**: A function to update the block's attributes.
 
 ---
 
@@ -160,7 +158,11 @@ export function ColorSettings({ title, attributes, setAttributes }) {
 1. Import the required components and functions:
 
     ```javascript
-    import { ColorSettings, colorValues, defaultColorNameAttributes } from './path-to-your-file';
+    import {
+        ColorSettings,
+        colorValues,
+        defaultColorNameAttributes,
+    } from './path-to-your-file';
     ```
 
 2. Add the `defaultColorNameAttributes` to your block's attribute definitions:
@@ -198,7 +200,13 @@ registerBlockType('my-plugin/my-block', {
     },
     edit({ attributes, setAttributes }) {
         return (
-            <div style={{ color: colorValues.find(c => c.name === attributes.colorName).color }}>
+            <div
+                style={{
+                    color: colorValues.find(
+                        (c) => c.name === attributes.colorName
+                    ).color,
+                }}
+            >
                 <ColorSettings
                     title="Color Settings"
                     attributes={attributes}
@@ -210,7 +218,13 @@ registerBlockType('my-plugin/my-block', {
     },
     save({ attributes }) {
         return (
-            <div style={{ color: colorValues.find(c => c.name === attributes.colorName).color }}>
+            <div
+                style={{
+                    color: colorValues.find(
+                        (c) => c.name === attributes.colorName
+                    ).color,
+                }}
+            >
                 {/* Block content */}
             </div>
         );

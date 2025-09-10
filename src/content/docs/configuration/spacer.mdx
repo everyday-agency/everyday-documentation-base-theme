@@ -1,13 +1,13 @@
 ---
-title: "Spacer"
-description: "Documentation for the Spacer utility used in WordPress block components."
+title: 'Spacer'
+description: 'Documentation for the Spacer utility used in WordPress block components.'
 sidebar:
     order: 3
 ---
 
 import { Code } from '@astrojs/starlight/components';
 
-import Spacer from "@components/configuration/spacer/Spacer.astro";
+import Spacer from '@components/configuration/spacer/Spacer.astro';
 
 <Spacer />
 
@@ -18,12 +18,13 @@ The **Spacer Utility** provides consistent margin spacing classes and settings f
 ### Import Information
 
 #### JavaScript Import
+
 ```jsx
 import {
     SpacerSettings,
     defaultSpacerAttributes,
     spacerClass,
-} from '../../configuration/spacer/spacer';
+} from '@configuration/spacer/spacer';
 ```
 
 ```jsx
@@ -41,13 +42,13 @@ import {
 ```
 
 #### PHP Import
+
 ```php
 use basetheme\Utilities\Spacer_Utils;
 if (!isset($attributes["spacer"])) {
     $attributes["spacer"] = "medium";
 }
 ```
-
 
 ```php
 <section class="<?php echo Spacer_Utils::render_spacer($attributes['spacer']); ?>">
@@ -60,6 +61,7 @@ if (!isset($attributes["spacer"])) {
 ### JavaScript Implementation
 
 #### Default Attributes
+
 The `defaultSpacerAttributes` object defines the default spacer setting.
 
 ```jsx
@@ -69,20 +71,22 @@ export const defaultSpacerAttributes = {
 ```
 
 #### Spacer Classes
+
 The `spacerClass` function maps the spacer values to corresponding CSS classes.
 Spacer variable is set to `$spacer: 1rem;` in the `_spacer.scss` file.
 
-| Spacer Value | CSS Class      | Value          |
-|--------------|----------------|----------------|
-| None         | `mt-0`         | `0: 0`          |
-| Extra Small  | `mt-2`         | `2: $spacer * 0.5`     |
-| Small        | `mt-3`         | `3: $spacer`  |
-| Medium       | `mt-4`         | `4: $spacer * 1.5`     |
-| Large        | `mt-3 mt-lg-5` | `5: $spacer * 2`       |
-| Extra Large  | `mt-5 mt-lg-10`| `10: $spacer * 6`      |
-| Extra Extra Large | `mt-6 mt-lg-12`| `12: $spacer * 8`      |
+| Spacer Value      | CSS Class       | Value              |
+| ----------------- | --------------- | ------------------ |
+| None              | `mt-0`          | `0: 0`             |
+| Extra Small       | `mt-2`          | `2: $spacer * 0.5` |
+| Small             | `mt-3`          | `3: $spacer`       |
+| Medium            | `mt-4`          | `4: $spacer * 1.5` |
+| Large             | `mt-3 mt-lg-5`  | `5: $spacer * 2`   |
+| Extra Large       | `mt-5 mt-lg-10` | `10: $spacer * 6`  |
+| Extra Extra Large | `mt-6 mt-lg-12` | `12: $spacer * 8`  |
 
 **Function Implementation**:
+
 ```javascript
 export const spacerClass = (spacer) => {
     switch (spacer) {
@@ -105,6 +109,7 @@ export const spacerClass = (spacer) => {
 ```
 
 #### SpacerSettings Component
+
 The `SpacerSettings` component provides a UI for selecting spacer values in the WordPress block editor.
 
 ```jsx

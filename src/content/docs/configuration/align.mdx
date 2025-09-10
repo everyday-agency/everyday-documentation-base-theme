@@ -5,10 +5,9 @@ description: This documentation outlines the implementation and usage of the Ali
 
 import { Code } from '@astrojs/starlight/components';
 
-import Align from "@components/configuration/align/Align.astro";
+import Align from '@components/configuration/align/Align.astro';
 
 <Align />
-
 
 The **Alignment Settings** feature allows users to set and modify the alignment of content within a custom WordPress block. This is achieved using the `PanelBody` and `SelectControl` components from `@wordpress/components`.
 
@@ -23,7 +22,7 @@ import {
     defaultAlignAttributes,
     alignClass,
     AlignSettings,
-} from '../../configuration/align/align';
+} from '@configuration/align/align';
 ```
 
 ```javascript
@@ -74,7 +73,7 @@ export const defaultAlignAttributes = {
 };
 ```
 
-- **`align`**: The alignment property with a default value of `'left'`.
+-   **`align`**: The alignment property with a default value of `'left'`.
 
 ---
 
@@ -99,11 +98,11 @@ export const alignClass = (align) => {
 
 ### Supported Alignments
 
-| Alignment | CSS Class               |
-|-----------|-------------------------|
-| `left`    | `justify-content-start` |
-| `center`  | `justify-content-center`|
-| `right`   | `justify-content-end`   |
+| Alignment | CSS Class                |
+| --------- | ------------------------ |
+| `left`    | `justify-content-start`  |
+| `center`  | `justify-content-center` |
+| `right`   | `justify-content-end`    |
 
 ---
 
@@ -136,17 +135,17 @@ export function AlignSettings({ title, attributes, setAttributes }) {
 
 ### Props
 
-- **`title`**: The title displayed for the alignment settings panel.
-- **`attributes`**: The block attributes, including the current alignment value.
-- **`setAttributes`**: A function to update the block's attributes.
+-   **`title`**: The title displayed for the alignment settings panel.
+-   **`attributes`**: The block attributes, including the current alignment value.
+-   **`setAttributes`**: A function to update the block's attributes.
 
 ### Select Control Options
 
-| Label   | Value  |
-|---------|--------|
-| Left    | `left` |
-| Center  | `center` |
-| Right   | `right` |
+| Label  | Value    |
+| ------ | -------- |
+| Left   | `left`   |
+| Center | `center` |
+| Right  | `right`  |
 
 ---
 
@@ -156,7 +155,11 @@ export function AlignSettings({ title, attributes, setAttributes }) {
 
     ```javascript
     import { PanelBody, PanelRow, SelectControl } from '@wordpress/components';
-    import { AlignSettings, defaultAlignAttributes, alignClass } from './path-to-your-file';
+    import {
+        AlignSettings,
+        defaultAlignAttributes,
+        alignClass,
+    } from './path-to-your-file';
     ```
 
 2. Add the `defaultAlignAttributes` to your block's attribute definitions:
@@ -220,7 +223,6 @@ registerBlockType('my-plugin/my-block', {
 
 ---
 
-
 ## Class Definition
 
 The `Align_Utils` class is defined within the `Everydayblocktheme\Utilities` namespace.
@@ -270,20 +272,20 @@ The `render_align` method evaluates the alignment attribute and returns the corr
 
 ### Parameters
 
-- **`$attributes`**: *(string)* The alignment attribute provided (e.g., `'left'`, `'center'`, `'right'`).
+-   **`$attributes`**: _(string)_ The alignment attribute provided (e.g., `'left'`, `'center'`, `'right'`).
 
 ### Return Value
 
-- *(string)*: The Bootstrap CSS class corresponding to the alignment attribute.
+-   _(string)_: The Bootstrap CSS class corresponding to the alignment attribute.
 
 ### Alignment Mappings
 
-| Alignment | CSS Class               |
-|-----------|-------------------------|
-| `left`    | `justify-content-start` |
-| `center`  | `justify-content-center`|
-| `right`   | `justify-content-end`   |
-| *Default* | `justify-content-start` |
+| Alignment | CSS Class                |
+| --------- | ------------------------ |
+| `left`    | `justify-content-start`  |
+| `center`  | `justify-content-center` |
+| `right`   | `justify-content-end`    |
+| _Default_ | `justify-content-start`  |
 
 ---
 
@@ -310,6 +312,4 @@ echo $alignClass;
 
 The **Alignment Settings** component is a reusable and customizable solution for managing alignment options in WordPress blocks, ensuring a consistent user experience and alignment functionality.
 
-
 The `Align_Utils` class is a utility for generating alignment CSS classes dynamically. It evaluates the provided alignment attribute and returns the appropriate Bootstrap alignment class.
-
