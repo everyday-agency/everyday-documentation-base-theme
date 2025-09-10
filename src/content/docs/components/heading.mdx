@@ -28,10 +28,7 @@ The block is registered under the namespace `basetheme/heading`.
 
 ```javascript
 import { registerBlockType } from '@wordpress/blocks';
-import {
-    Heading,
-    defaultHeadingAttributes,
-} from '../../utilities/heading/heading';
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
 import { paragraph } from '@wordpress/icons';
 
 registerBlockType('basetheme/heading', {

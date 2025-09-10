@@ -5,7 +5,7 @@ description: This documentation provides an overview of the Image Component and 
 
 import { Code } from '@astrojs/starlight/components';
 
-import Image from "@components/utilities/image/Image.astro";
+import Image from '@components/utilities/image/Image.astro';
 
 <Image />
 
@@ -27,7 +27,7 @@ import {
     Image,
     ImageSettings,
     getDefaultImageAttributes,
-} from '../../utilities/image/image';
+} from '@utilities/image/image';
 ```
 
 ```javascript
@@ -87,10 +87,10 @@ export const getDefaultImageAttributes = {
 };
 ```
 
-- **`mediaId`**: The ID of the selected media.
-- **`mediaUrl`**: The URL of the image. Defaults to a placeholder image.
-- **`imageSize`**: The size of the image. Defaults to `'full'`.
-- **`loading`**: Determines if lazy loading is enabled. Defaults to `true`.
+-   **`mediaId`**: The ID of the selected media.
+-   **`mediaUrl`**: The URL of the image. Defaults to a placeholder image.
+-   **`imageSize`**: The size of the image. Defaults to `'full'`.
+-   **`loading`**: Determines if lazy loading is enabled. Defaults to `true`.
 
 ---
 
@@ -171,9 +171,9 @@ export function ImageSettings({ attributes, setAttributes, imageSizeOptions }) {
 
 ### Props
 
-- **`attributes`**: The block's attributes, including `mediaId`, `mediaUrl`, `imageSize`, and `loading`.
-- **`setAttributes`**: A function to update the block's attributes.
-- **`imageSizeOptions`**: An array of image size options for the `SelectControl`.
+-   **`attributes`**: The block's attributes, including `mediaId`, `mediaUrl`, `imageSize`, and `loading`.
+-   **`setAttributes`**: A function to update the block's attributes.
+-   **`imageSizeOptions`**: An array of image size options for the `SelectControl`.
 
 ---
 
@@ -194,13 +194,13 @@ export function Image({ mediaUrl, variant }) {
 
 ### Props
 
-- **`mediaUrl`**: The URL of the image to display.
-- **`variant`**: *(optional)* Determines the CSS class for image rendering. Defaults to `'w-auto h-100'`.
+-   **`mediaUrl`**: The URL of the image to display.
+-   **`variant`**: _(optional)_ Determines the CSS class for image rendering. Defaults to `'w-auto h-100'`.
 
-| Variant Value | Class Name                     |
-|---------------|--------------------------------|
+| Variant Value | Class Name                       |
+| ------------- | -------------------------------- |
 | `'cover'`     | `'w-100 h-100 object-fit-cover'` |
-| *Default*     | `'w-auto h-100'`               |
+| _Default_     | `'w-auto h-100'`                 |
 
 ---
 
@@ -211,7 +211,11 @@ export function Image({ mediaUrl, variant }) {
 1. Import the required components:
 
     ```javascript
-    import { ImageSettings, Image, getDefaultImageAttributes } from './path-to-your-file';
+    import {
+        ImageSettings,
+        Image,
+        getDefaultImageAttributes,
+    } from './path-to-your-file';
     ```
 
 2. Add the `getDefaultImageAttributes` to your block's attribute definitions:
@@ -273,9 +277,7 @@ registerBlockType('my-plugin/my-image-block', {
         );
     },
     save({ attributes }) {
-        return (
-            <Image mediaUrl={attributes.mediaUrl} variant="cover" />
-        );
+        return <Image mediaUrl={attributes.mediaUrl} variant="cover" />;
     },
 });
 ```
@@ -343,15 +345,15 @@ The `init_image` method initializes the provided image attributes, ensuring that
 
 ### Parameters
 
-- **`$attributes`**: *(array, passed by reference)* The attributes for the image. This will be updated with default values if necessary.
+-   **`$attributes`**: _(array, passed by reference)_ The attributes for the image. This will be updated with default values if necessary.
 
 ### Default Values
 
-| Attribute    | Default Value                                  |
-|--------------|-----------------------------------------------|
-| `mediaUrl`   | `/assets/images/placeholder-image.png`         |
-| `imageSize`  | `full`                                        |
-| `loading`    | `lazy` (if provided) or `eager` (if missing)  |
+| Attribute   | Default Value                                |
+| ----------- | -------------------------------------------- |
+| `mediaUrl`  | `/assets/images/placeholder-image.png`       |
+| `imageSize` | `full`                                       |
+| `loading`   | `lazy` (if provided) or `eager` (if missing) |
 
 ---
 
@@ -363,8 +365,8 @@ The `render_image` method outputs an HTML `<img>` tag or a WordPress attachment 
 
 ### Parameters
 
-- **`$attributes`**: *(array)* The attributes for the image.
-- **`$class`**: *(string, optional)* Additional CSS classes for the image. Defaults to `"img-fluid w-100 object-fit-cover"`.
+-   **`$attributes`**: _(array)_ The attributes for the image.
+-   **`$class`**: _(string, optional)_ Additional CSS classes for the image. Defaults to `"img-fluid w-100 object-fit-cover"`.
 
 ### Output Logic
 
@@ -420,7 +422,11 @@ Image_Utils::render_image(
 #### With `mediaId`
 
 ```html
-<img src="/wp-content/uploads/image.jpg" class="img-fluid w-100 object-fit-cover" loading="lazy" />
+<img
+    src="/wp-content/uploads/image.jpg"
+    class="img-fluid w-100 object-fit-cover"
+    loading="lazy"
+/>
 ```
 
 #### Without `mediaId`

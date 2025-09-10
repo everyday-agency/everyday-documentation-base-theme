@@ -5,10 +5,10 @@ description: This documentation provides an overview of the Button Component, Bu
 
 import { Code } from '@astrojs/starlight/components';
 
-import Button from "@components/utilities/button/Button.astro";
+import Button from '@components/utilities/button/Button.astro';
 
-<Button title="Button Primary" color="primary"/>
-<Button title="Button Secondary" color="secondary"/>
+<Button title="Button Primary" color="primary" />
+<Button title="Button Secondary" color="secondary" />
 
 ## Button Component
 
@@ -21,7 +21,7 @@ The **Button Component** allows users to create and manage buttons in WordPress 
 ### JavaScript Import
 
 ```javascript
-import { Button, defaultButtonAttributes } from '../../utilities/button/button';
+import { Button, defaultButtonAttributes } from '@utilities/button/button';
 ```
 
 ```javascript
@@ -32,10 +32,7 @@ import { Button, defaultButtonAttributes } from '../../utilities/button/button';
 ```
 
 ```javascript
-<Button
-    attributes={attributes}
-    setAttributes={setAttributes}
-/>
+<Button attributes={attributes} setAttributes={setAttributes} />
 ```
 
 ### PHP Import
@@ -66,9 +63,9 @@ export const defaultButtonAttributes = {
 };
 ```
 
-- **`linkText`**: The text displayed on the button. Defaults to `'Mehr erfahren'`.
-- **`linkObject`**: An object containing link properties such as URL and target.
-- **`buttonColorName`**: The button's color. Defaults to `'primary'`.
+-   **`linkText`**: The text displayed on the button. Defaults to `'Mehr erfahren'`.
+-   **`linkObject`**: An object containing link properties such as URL and target.
+-   **`buttonColorName`**: The button's color. Defaults to `'primary'`.
 
 ---
 

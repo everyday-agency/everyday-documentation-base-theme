@@ -285,10 +285,7 @@ You can have a look at the heading component [here](/utilities/heading/).
 First we must import the [Heading component](utilities/heading/#javascript-import).
 
 ```jsx
-import {
-    Heading,
-    defaultHeadingAttributes,
-} from '../../utilities/heading/heading';
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
 ```
 
 Inside the `registerBlockType` we add the default attributes.
@@ -315,10 +312,7 @@ Now our component should look like this.
 import { registerBlockType } from '@wordpress/blocks';
 import { postAuthor } from '@wordpress/icons';
 
-import {
-    Heading,
-    defaultHeadingAttributes,
-} from '../../utilities/heading/heading';
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
 
 registerBlockType('basetheme/job-list', {
     title: 'Job List',
@@ -398,10 +392,7 @@ import { postAuthor } from '@wordpress/icons';
 
 import { RichText } from '@wordpress/block-editor';
 
-import {
-    Heading,
-    defaultHeadingAttributes,
-} from '../../utilities/heading/heading';
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
 
 registerBlockType('basetheme/job-list', {
     title: 'Job List',
@@ -457,7 +448,7 @@ function SaveComponent() {
 For our Description we want to import our [Text Component](/utilities/text/).
 
 ```jsx
-import { Text, defaultTextAttributes } from '../../utilities/text/text';
+import { Text, defaultTextAttributes } from '@utilities/text/text';
 ```
 
 Add the defaultTextAttributes to attributes.
@@ -492,12 +483,9 @@ import { postAuthor } from '@wordpress/icons';
 
 import { RichText } from '@wordpress/block-editor';
 
-import { Text, defaultTextAttributes } from '../../utilities/text/text';
+import { Text, defaultTextAttributes } from '@utilities/text/text';
 
-import {
-    Heading,
-    defaultHeadingAttributes,
-} from '../../utilities/heading/heading';
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
 
 registerBlockType('basetheme/job-list', {
     title: 'Job List',
@@ -560,7 +548,7 @@ function SaveComponent() {
 Now we want to import our [Button Component](/utilities/button/).
 
 ```jsx
-import { Button, defaultButtonAttributes } from '../../utilities/button/button';
+import { Button, defaultButtonAttributes } from '@utilities/button/button';
 ```
 
 Add the defaultButtonAttributes to attributes
@@ -591,14 +579,11 @@ import { postAuthor } from '@wordpress/icons';
 
 import { RichText } from '@wordpress/block-editor';
 
-import { Text, defaultTextAttributes } from '../../utilities/text/text';
+import { Text, defaultTextAttributes } from '@utilities/text/text';
 
-import {
-    Heading,
-    defaultHeadingAttributes,
-} from '../../utilities/heading/heading';
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
 
-import { Button, defaultButtonAttributes } from '../../utilities/button/button';
+import { Button, defaultButtonAttributes } from '@utilities/button/button';
 
 registerBlockType('basetheme/job-list', {
     title: 'Job List',
@@ -694,14 +679,11 @@ import { postAuthor } from '@wordpress/icons';
 
 import { RichText } from '@wordpress/block-editor';
 
-import { Text, defaultTextAttributes } from '../../utilities/text/text';
+import { Text, defaultTextAttributes } from '@utilities/text/text';
 
-import {
-    Heading,
-    defaultHeadingAttributes,
-} from '../../utilities/heading/heading';
+import { Heading, defaultHeadingAttributes } from '@utilities/heading/heading';
 
-import { Button, defaultButtonAttributes } from '../../utilities/button/button';
+import { Button, defaultButtonAttributes } from '@utilities/button/button';
 
 registerBlockType('basetheme/job-list', {
     title: 'Job List',

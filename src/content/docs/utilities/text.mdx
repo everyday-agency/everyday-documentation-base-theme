@@ -5,7 +5,7 @@ description: This documentation provides an overview of the Text component, whic
 
 import { Code } from '@astrojs/starlight/components';
 
-import Text from "@components/utilities/text/Text.astro";
+import Text from '@components/utilities/text/Text.astro';
 
 <Text text="This is a text component." />
 
@@ -20,7 +20,7 @@ The **Text** component allows users to input rich text content with optional tex
 ### JavaScript Import
 
 ```javascript
-import { Text, defaultTextAttributes } from '../../utilities/text/text';
+import { Text, defaultTextAttributes } from '@utilities/text/text';
 ```
 
 ```javascript
@@ -69,8 +69,8 @@ export const defaultTextAttributes = {
 };
 ```
 
-- **`text`**: The text content of the block.
-- **`alignment`**: The alignment of the text (`'left'`, `'center'`, `'right'`).
+-   **`text`**: The text content of the block.
+-   **`alignment`**: The alignment of the text (`'left'`, `'center'`, `'right'`).
 
 ---
 
@@ -138,10 +138,10 @@ export function Text({
 
 ### Props
 
-- **`attributes`**: The block's attributes, including `text` and `alignment`.
-- **`setAttributes`**: A function to update the block's attributes.
-- **`enableAlignment`**: *(boolean)* Enables or disables alignment controls. Defaults to `true`.
-- **`className`**: *(string)* Additional CSS classes for the text component.
+-   **`attributes`**: The block's attributes, including `text` and `alignment`.
+-   **`setAttributes`**: A function to update the block's attributes.
+-   **`enableAlignment`**: _(boolean)_ Enables or disables alignment controls. Defaults to `true`.
+-   **`className`**: _(string)_ Additional CSS classes for the text component.
 
 ---
 
@@ -149,12 +149,12 @@ export function Text({
 
 The alignment is mapped to the following Bootstrap text alignment classes:
 
-| Alignment | CSS Class    |
-|-----------|--------------|
-| `left`    | `text-start` |
-| `center`  | `text-center`|
-| `right`   | `text-end`   |
-| *Default* | `text-start` |
+| Alignment | CSS Class     |
+| --------- | ------------- |
+| `left`    | `text-start`  |
+| `center`  | `text-center` |
+| `right`   | `text-end`    |
+| _Default_ | `text-start`  |
 
 ---
 
@@ -215,8 +215,8 @@ registerBlockType('my-plugin/my-block', {
             attributes.alignment === 'center'
                 ? 'text-center'
                 : attributes.alignment === 'right'
-                ? 'text-end'
-                : 'text-start';
+                  ? 'text-end'
+                  : 'text-start';
 
         return (
             <div className={`${alignmentClass} custom-class`}>
