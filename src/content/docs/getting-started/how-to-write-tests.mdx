@@ -25,7 +25,7 @@ We use **BackstopJS** to:
 Our test assets live in a project‑root `test/` folder. The most important files are:
 
 -   `test/backstop.config.js` — our main BackstopJS configuration
--   `test/scenarios/*.json` — individual scenario definitions
+-   `test/scenarios/*.test.json` — individual scenario definitions
 -   `test/backstop_data/engine_scripts/puppet/onReady.js` — script that eagerly loads lazy images and runs helpers
 
 > If `backstop.json` is missing, you can bootstrap defaults with `npx backstop init` — but our setup uses **`backstop.config.js`** as the single source of truth.
@@ -41,7 +41,7 @@ project/
 ├─ test/
 │  ├─ backstop.config.js
 │  ├─ scenarios/
-│  │  └─ example.json
+│  │  └─ example.test.json
 │  └─ backstop_data/
 │     ├─ bitmaps_reference/
 │     ├─ bitmaps_test/
